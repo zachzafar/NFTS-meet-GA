@@ -1,10 +1,13 @@
+import React from 'react';
 import Navbar from './components/Navbar';
 import Main from './components/Main';
 import Mint from './components/Mint';
 import Holders from './components/Holders';
+import Evolve from './components/Evolve';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-function App() {
+
+const App: React.FC = () => {
   return (
     <div className='App'>
       <Router>
@@ -13,6 +16,7 @@ function App() {
           <Route path='/' element={<Main />} />
           <Route path='mint' element={<Mint />} />
           <Route path='holders' element={<Holders />} />
+          <Route path='evolve' element={<Evolve />} />
         </Routes>
       </Router>
     </div>
