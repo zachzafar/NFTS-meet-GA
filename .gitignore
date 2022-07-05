@@ -3,5 +3,13 @@
 node_modules
 package-lock.json
 
-# ignore the Virtual environment
-venv/.*
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+__pycache__/
