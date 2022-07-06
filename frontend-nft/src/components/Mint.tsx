@@ -1,7 +1,7 @@
 import React from 'react';
 import { Paper, Box, Button } from '@mui/material';
 
-function Mint() {
+const Mint:React.FC = () => {
   return (
     <div className='grid place-items-center'>
       <Box

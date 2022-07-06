@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Stack, Button } from '@mui/material';
 
-function Navbar() {
+const Navbar:React.FC = () => {
   let { pathname } = useLocation();
   let stack;
   switch (pathname) {
@@ -30,7 +30,7 @@ function Navbar() {
     case '/holders':
       stack = (
         <Stack direction='row' spacing={2}>
-          <Button component={Link} to='/evolve' color='inherit'>
+          <Button component={Link} to='/evolve/crossover' color='inherit'>
             Evolve
           </Button>
           <Button component={Link} to='/mint' color='inherit'>
@@ -42,7 +42,7 @@ function Navbar() {
         </Stack>
       );
       break;
-    case '/evolve':
+    case '/evolve/crossover':
       stack = (
         <Stack direction='row' spacing={2}>
           <Button component={Link} to='/' color='inherit'>
@@ -51,10 +51,22 @@ function Navbar() {
           <Button component={Link} to='/holders' color='inherit'>
             Holders
           </Button>
-          <Button color='inherit'>Crossover</Button>
-          <Button color='inherit'>Mutate</Button>
+          <Button component={Link} to='/evolve/mutate' color='inherit'>Mutate</Button>
         </Stack>
       );
+      break;
+      case '/evolve/mutate':
+        stack = (
+        <Stack direction='row' spacing={2}>
+          <Button component={Link} to='/' color='inherit'>
+            Home
+          </Button>
+          <Button component={Link} to='/holders' color='inherit'>
+            Holders
+          </Button>
+          <Button component={Link} to='/evolve/crossover' color='inherit'>Crossover</Button>
+        </Stack>
+        );  
       break;
     default:
       stack = null;
