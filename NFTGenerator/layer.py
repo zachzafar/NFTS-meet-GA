@@ -1,14 +1,19 @@
+from email.mime import image
 import os
 import random
+from PIL import Image
+import re
 
 class Layer:
+
     def __init__(self, path: str):
         self.path = path
 
-    def get_random_image_path(self):
-        image_file_names = os.listdir(self.path)
-        random_image_file_name = random.choice(image_file_names)
-        return os.path.join(self.path, random_image_file_name)
+    def get_all_image_path(self):
+        image_file_paths = list()
+        image_file_names = sorted(os.listdir(self.path))
+        for image_file_name in image_file_names:
+            image_file_paths.append(os.path.join(self.path, image_file_name))
+        return image_file_paths
 
-    def should_generate(self) -> bool:
-        return random.random() < self.rarity
+    
