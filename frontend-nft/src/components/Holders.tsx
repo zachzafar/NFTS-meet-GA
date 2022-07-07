@@ -1,20 +1,20 @@
 import React, {useState,useEffect} from 'react';
 import {useWallet} from '@solana/wallet-adapter-react';
 import LoginHolders from './LoginHolders'
+import Gallery from './Gallery';
 
 
 function Holders() {
   let [walletStatus,setWalletStatus] = useState(false);
-  const wallet = useWallet();
+  const { publicKey } = useWallet();
 
   useEffect(() => {
-    wallet.connect()
-  });
-
+    publicKey ? setWalletStatus(true) : setWalletStatus(false);
+  },[publicKey])
   
   return (
     <div>
-     {walletStatus ? <h1>holders</h1>: <LoginHolders/>} 
+     {walletStatus ? <Gallery/>: <LoginHolders/>} 
     </div>
   );
 }

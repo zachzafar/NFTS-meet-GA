@@ -1,22 +1,45 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {ConnectionProvider, WalletProvider} from '@solana/wallet-adapter-react';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
-import * as web3 from '@solana/web3.js';
+import {
+    CoinbaseWalletAdapter,
+    GlowWalletAdapter,
+    PhantomWalletAdapter,
+    SlopeWalletAdapter,
+    SolflareWalletAdapter,
+    TorusWalletAdapter,
+} from '@solana/wallet-adapter-wallets';
+import {WalletModalProvider} from '@solana/wallet-adapter-react-ui';
+import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
+
+import { clusterApiUrl } from '@solana/web3.js';
 import Navbar from './components/Navbar';
 import Main from './components/Main';
 import Mint from './components/Mint';
 import Holders from './components/Holders';
 import Evolve from './components/Evolve';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+require('@solana/wallet-adapter-react-ui/styles.css');
 
 
 const App: React.FC = () => {
-  const endpoint = web3.clusterApiUrl('devnet');
-  const wallet = new PhantomWalletAdapter();
+  const network = WalletAdapterNetwork.Devnet;
+  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  const wallets = useMemo(
+        () => [
+            new CoinbaseWalletAdapter(),
+            new PhantomWalletAdapter(),
+            new GlowWalletAdapter(),
+            new SlopeWalletAdapter(),
+            new SolflareWalletAdapter({ network }),
+            new TorusWalletAdapter(),
+        ],
+        [network]
+    );
   
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={[wallet]}>
+      <WalletProvider wallets={wallets}>
+        <WalletModalProvider>
         <div className='App'>
       <Router>
         <Navbar />
@@ -28,6 +51,7 @@ const App: React.FC = () => {
         </Routes>
       </Router>
     </div>
+    </WalletModalProvider>
     </WalletProvider>
     </ConnectionProvider>
   );
