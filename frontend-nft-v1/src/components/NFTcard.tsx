@@ -8,11 +8,12 @@ import { CardActionArea } from '@mui/material';
 interface Props {
     image: string;
     title: string;
+    description: string;
 
 }
 
 
-const NFTcard : React.FC<Props> = ({image,title}) => {
+const NFTcard : React.FC<Props> = ({image,title,description}) => {
   return (
     <Card sx={{ maxWidth: 145 }}>
       <CardActionArea>
@@ -27,7 +28,7 @@ const NFTcard : React.FC<Props> = ({image,title}) => {
             {title}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            cool nft
+            {description}
           </Typography>
         </CardContent>
       </CardActionArea>

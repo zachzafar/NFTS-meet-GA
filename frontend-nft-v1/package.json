@@ -1,40 +1,35 @@
 {
-  "name": "frontend-nft",
+  "name": "frontend-nft-v1",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@metaplex-foundation/js": "^0.11.7",
-    "@mui/icons-material": "^5.8.4",
-    "@mui/material": "^5.8.6",
+    "@mui/material": "^5.8.7",
     "@solana/wallet-adapter-base": "^0.9.7",
-    "@solana/wallet-adapter-phantom": "^0.9.5",
     "@solana/wallet-adapter-react": "^0.15.6",
     "@solana/wallet-adapter-react-ui": "^0.9.8",
     "@solana/wallet-adapter-wallets": "^0.16.6",
     "@solana/web3.js": "^1.47.3",
-    "@testing-library/jest-dom": "^5.16.2",
-    "@testing-library/react": "^12.1.2",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
-    "assert": "^2.0.0",
-    "browserify-zlib": "^0.2.0",
-    "crypto-browserify": "^3.12.0",
-    "jimp": "^0.16.1",
-    "path-browserify": "^1.0.1",
-    "react": "^17.0.2",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.11.43",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "react": "^18.2.0",
     "react-app-rewired": "^2.2.1",
-    "react-dom": "^17.0.2",
+    "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "5.0.0",
-    "stream": "^0.0.2",
-    "stream-browserify": "^3.0.0",
-    "util": "^0.12.4",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.7.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "tsc",
+    "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject"
   },
@@ -51,21 +46,14 @@
       "not op_mini all"
     ],
     "development": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all",
-      "chrome >= 67",
-      "edge >= 79",
-      "firefox >= 68",
-      "opera >= 54",
-      "safari >= 14"
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
     ]
   },
   "devDependencies": {
-    "@types/react-dom": "^18.0.5",
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
-    "tailwindcss": "^3.1.4",
-    "typescript": "^4.7.4"
+    "tailwindcss": "^3.1.4"
   }
 }
