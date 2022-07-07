@@ -15,8 +15,12 @@ layers = ["layer-0",  # Background
           "layer-12", # Glasses
           "layer-13"] # Hat
 
+image_path = r"./artwork"
+
+assest_output_path = r"./output"
+
 def generate_nft():
-    generator = NFTGenerator("../artwork", layers)
+    generator = NFTGenerator(image_path, assest_output_path, layers)
     generator.generate_nft()
 
 if __name__ == "__main__":
