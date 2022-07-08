@@ -19,7 +19,8 @@ const Gallery:React.FC = () => {
     
 
     useEffect( () => {
-      const candyMachine = new PublicKey("HmU89dxJzF2qMDu7C3fZrtEgGm7GxVoZqDy5T7KnMzmK");
+      if(publicKey === null) {return;}
+      const collectionAddress:PublicKey = new PublicKey("BEmm53XQpy54vDSZ8efN9CxTwtbrCSXqezUvifoKmvZv")
       const metaplex = new Metaplex(connection);
       const loadNFTs =  async () => {
       let nft:NFT;
@@ -27,8 +28,14 @@ const Gallery:React.FC = () => {
       let name:string;
       let description:string;
       let image:string;
-      const nfts = await metaplex.nfts().findAllByCandyMachine(candyMachine,2);
-      const nftsmetadata = nfts.map(nft => nft.metadataTask.run());
+      let nftCollectionAddress;
+      let nfts = await metaplex.nfts().findAllByOwner(publicKey)
+      nfts = nfts.filter((nft)=> {
+        nftCollectionAddress = nft['collection'] ?? null;
+        return (nftCollectionAddress !== null && collectionAddress.equals(nftCollectionAddress['key'])) 
+
+      });
+      const nftsmetadata = nfts.map(nft => nft.metadataTask.run())
       Promise.all(nftsmetadata).then(metadataList =>{
         for(let i = 0; i < metadataList.length; i++){
           name = metadataList[i]['name'] ?? ''
