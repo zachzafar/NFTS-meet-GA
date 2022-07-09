@@ -1,16 +1,29 @@
 import os
-from typing import List
 from PIL import Image
 from layer import Layer
 import random
+import csv
+from datetime import datetime
+import numpy as np
 
 class NFTGenerator:
-    def __init__(self, images_path: str, output_path: str, layers: list()):
+    def __init__(self, images_path: str, output_path: str, config_path: str, layers: list(), no_of_artwork: int):
         self.body_image_layers = self.load_body_image_layers(images_path, layers) # a 2D array contain all the layers images path
         self.head_decoration_layers = self.load_head_decoration_layers(images_path) # an array contain all the images path of head-decoration
-        self.values = self.generate_random_values()
-        self.output_path: str = output_path
+        self.datetime_now = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
+        self.output_path = output_path
+        self.config_path = config_path
+        self.no_of_artwork = no_of_artwork
         os.makedirs(self.output_path, exist_ok=True)
+        self.db_cache = list()
+        self.db_file = os.path.join(config_path, "db.csv")
+        if os.path.exists(self.db_file):
+            with open(self.db_file, newline='') as csvfile:
+                self.db_cache = list(csv.reader(csvfile))
+            os.rename(self.db_file, os.path.join(config_path, self.datetime_now + ".csv"))
+
+        print(self.db_cache)
+
 
     def load_body_image_layers(self, images_path: str, layers: list()):
         rtn_layers = list()
@@ -20,19 +33,29 @@ class NFTGenerator:
             rtn_layers.append(layer.get_all_image_path())
         return rtn_layers
 
+
     def load_head_decoration_layers(self, images_path):
         layer_path = os.path.join(images_path, "head-decoration")
         layer = Layer(layer_path)
         return layer.get_all_image_path()
 
+
     def save_image(self, filename: str, image: Image):
         image.save(os.path.join(self.output_path, filename))
+
 
     def generate_random_values(self):
         values = list()
         for i in range(len(self.body_image_layers)):
             values.append(random.randint(0, len(self.body_image_layers[i])))
         return values
+
+    
+    def db_cache_exist(self, values):
+        for value in self.db_cache:
+            if list(map(int, value)) == values:
+                return True
+        return False
 
     # Creates the artwork based on the indexes
     def create_artwork(self, values):
@@ -49,6 +72,7 @@ class NFTGenerator:
         # head decoration
         if values[1] != 9 and values[8] in [0, 9, 21, 22, 23, 24, 41, 42] and values[12] not in [25, 27] and values[13] in [0, 10, 14, 15]:
             artwork = Image.alpha_composite(artwork, Image.open(self.head_decoration_layers[values[1] - 1])).convert('RGBA')
+            print("head")
 
         for i in range(2, length):
             try:
@@ -56,16 +80,13 @@ class NFTGenerator:
                     artwork = Image.alpha_composite(artwork, Image.open(self.body_image_layers[i][values[i] - 1])).convert('RGBA')
             except:
                 raise Exception("Layer {}: index {}".format(i, values[i]))
-        
-        for i in range(length):
-            print(self.body_image_layers[i][values[i] - 1])
 
         return artwork
 
 
     def validate(self, values, current=13):
         # sanity check
-        if len(values) != 14 or len(values) <= 0:
+        if len(values) != 14 or len(values) <= 0 or self.db_cache_exist(values):
             return False
 
         # 0 - Background (no constraints)
@@ -320,9 +341,32 @@ class NFTGenerator:
 
         return True
 
+
     def generate_nft(self):
         print("NFTGenerator: Generating NFT!")
-        artwork = self.create_artwork(self.values)
-        # print(self.body_image_layers)
-        # print(self.head_decoration_layers)
-        artwork.show()
+
+        valide_value = False
+        values = list()
+        
+        for i in range(self.no_of_artwork):
+            while not valide_value:
+                values = self.generate_random_values()
+                valide_value = self.validate(values)
+
+            self.db_cache.append(values)
+
+            # show the feature of the new artwork
+            for i in range(len(values)):
+                print(self.body_image_layers[i][values[i] - 1])
+            
+            artwork = self.create_artwork(values)
+            artwork.show()
+            valide_value = False
+
+        #save the db_cache into a csv file
+        with open(os.path.join(self.config_path, "db.csv"), "w+") as my_csv:
+            csvWriter = csv.writer(my_csv, delimiter=',')
+            for row in self.db_cache:
+                csvWriter.writerow(row)
+
+            
