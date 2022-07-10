@@ -1,5 +1,6 @@
 from nft_generator import NFTGenerator
 
+
 layers = ["layer-0",  # Background
           "layer-1",  # Skin
           "layer-2",  # Silhouette
@@ -16,11 +17,12 @@ layers = ["layer-0",  # Background
           "layer-13"] # Hat
 
 image_path = r"./artwork"
-
 assest_output_path = r"./output"
+config_path = r"./config"
+no_of_artwork = 10
 
 def generate_nft():
-    generator = NFTGenerator(image_path, assest_output_path, layers)
+    generator = NFTGenerator(image_path, assest_output_path, config_path, layers, no_of_artwork)
     generator.generate_nft()
 
 if __name__ == "__main__":
