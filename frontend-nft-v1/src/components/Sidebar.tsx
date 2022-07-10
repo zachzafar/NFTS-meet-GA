@@ -23,7 +23,7 @@ const Sidebar:React.FC = () => {
           attributes
         </Button>
       </div>
-      {contentType === '' ? <ContentLibrary contentType={contentType} /> : null}
+      {contentType === '' ? null: <ContentLibrary contentType={contentType} /> }
     </div>
   );
 }

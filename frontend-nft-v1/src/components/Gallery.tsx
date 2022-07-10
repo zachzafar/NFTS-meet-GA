@@ -1,8 +1,9 @@
-import React, {useState,useEffect} from 'react'
+import React, {useEffect} from 'react'
 import NFTcard from './NFTcard';
 import {useConnection, useWallet} from '@solana/wallet-adapter-react';
 import {Metaplex} from '@metaplex-foundation/js';
 import {PublicKey} from '@solana/web3.js';
+import useAppContext from '../func/appContext';
 
 interface NFT {
   name: string,
@@ -11,9 +12,9 @@ interface NFT {
 }
 
 const Gallery:React.FC = () => {
-    const [NFTS, setNFTS] = useState<NFT[]>([]);
     const { connection } = useConnection();
     const { publicKey } = useWallet();
+    const { saveNFTs,NFTs } = useAppContext();
     let key= 0;
 
     
@@ -44,17 +45,19 @@ const Gallery:React.FC = () => {
           nft = {name: name, image: image,  description: description }
           nftList.push(nft);
         }
-        setNFTS(nftList);
+        saveNFTs(nftList);
+
       }).catch(err => console.log(err));
     }
     loadNFTs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[publicKey,connection])
 
 
   
   return (
     <div>
-        {NFTS.map(nft => (
+        {NFTs.map(nft => (
            <NFTcard key={key++}image={nft.image} title={nft.name} description={nft.description}/>
         ))}
       </div>

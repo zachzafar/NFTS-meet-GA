@@ -10,8 +10,8 @@ import {
 } from '@solana/wallet-adapter-wallets';
 import {WalletModalProvider} from '@solana/wallet-adapter-react-ui';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-
 import { clusterApiUrl } from '@solana/web3.js';
+import {AppProvider} from './func/appContext';
 import Navbar from './components/Navbar';
 import Main from './components/Main';
 import Mint from './components/Mint';
@@ -40,17 +40,19 @@ const App: React.FC = () => {
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets}>
         <WalletModalProvider>
-        <div className='App'>
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path='/' element={<Main />} />
-          <Route path='mint' element={<Mint />} />
-          <Route path='holders' element={<Holders />} />
-          <Route path='evolve/:type' element={<Evolve />} />
-        </Routes>
-      </Router>
-    </div>
+          <AppProvider>
+            <div className='App'>
+              <Router>
+              <Navbar />
+                <Routes>
+                <Route path='/' element={<Main />} />
+                <Route path='mint' element={<Mint />} />
+                <Route path='holders' element={<Holders />} />
+                <Route path='evolve/:type' element={<Evolve />} />
+                </Routes>
+              </Router>
+            </div> 
+          </AppProvider>
     </WalletModalProvider>
     </WalletProvider>
     </ConnectionProvider>

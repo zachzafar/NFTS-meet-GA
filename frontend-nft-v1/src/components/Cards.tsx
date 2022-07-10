@@ -15,7 +15,7 @@ const Cards:React.FC = () => {
             },
           }}
         >
-            <Paper variant='outlined' elevation={3}/>
+            <Paper variant='outlined' elevation={0}/>
         </Box>
         <Box
           sx={{ 
@@ -26,7 +26,7 @@ const Cards:React.FC = () => {
             },
           }}
         >
-            <Paper variant='outlined' elevation={3}/>
+            <Paper variant='outlined' elevation={0}/>
         </Box>
          <h1>{type}</h1>
     </div>
