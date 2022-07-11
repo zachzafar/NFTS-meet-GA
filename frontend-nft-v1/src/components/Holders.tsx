@@ -15,7 +15,7 @@ function Holders() {
 
   useEffect(() => {
     
-    const collectionAddress:PublicKey = new PublicKey("BEmm53XQpy54vDSZ8efN9CxTwtbrCSXqezUvifoKmvZv")
+    const collectionAddress:PublicKey = new PublicKey(`${process.env.REACT_APP_CANDY_MACHINE_MINT_ADDRESS}`)
     if(publicKey === null) {return;}
     const metaplex = new Metaplex(connection);
     let pubKey;

@@ -41,15 +41,18 @@ const App: React.FC = () => {
       <WalletProvider wallets={wallets}>
         <WalletModalProvider>
           <AppProvider>
-            <div className='App'>
+            <div className='flex flex-col h-screen'>
               <Router>
               <Navbar />
-                <Routes>
+            <div className='h-full'>                
+              <Routes>
                 <Route path='/' element={<Main />} />
                 <Route path='mint' element={<Mint />} />
                 <Route path='holders' element={<Holders />} />
                 <Route path='evolve/:type' element={<Evolve />} />
-                </Routes>
+              </Routes>
+            </div>
+
               </Router>
             </div> 
           </AppProvider>

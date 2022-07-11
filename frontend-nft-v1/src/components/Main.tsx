@@ -18,7 +18,7 @@ const Main:React.FC = () => {
     
 
     useEffect( () => {
-      const candyMachine = new PublicKey("HmU89dxJzF2qMDu7C3fZrtEgGm7GxVoZqDy5T7KnMzmK");
+      const candyMachine = new PublicKey(`${process.env.REACT_APP_CANDY_MACHINE_ID}`);
       const metaplex = new Metaplex(connection);
       const loadCandyMachineMints =  async () => {
       let nft:NFT;

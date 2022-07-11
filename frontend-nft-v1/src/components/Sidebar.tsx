@@ -14,8 +14,8 @@ const Sidebar:React.FC = () => {
   }
 
   return (
-    <div className='flex flex-row w-32'>
-      <div className='flex flex-col h-full bg-gray-900 p-2' >
+    <div className='w-3/12 h-full flex flex-row'>
+      <div className='flex flex-col w-3/12 pl-3 bg-sky-900' >
         <Button onClick={() => contentTypeMutator('dudes')}>
           dudes
         </Button>

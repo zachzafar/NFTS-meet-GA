@@ -45,7 +45,7 @@ const ContentLibrary: React.FC<Props> = ({contentType}) => {
   },[NFTs]);
   
   return(
-    <div className='w-full bg-gray-900 h-full'>
+    <div className='w-full bg-sky-800 h-full'>
       {stack}
     </div>);
 }
