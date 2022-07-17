@@ -1,4 +1,7 @@
 from nft_generator import NFTGenerator
+from copy import deepcopy
+import os
+import json
 
 # Metadata Base. MUST BE EDITED.
 BASE_IMAGE_URL = "ipfs://<-- Your CID Code-->"  # Require edit
@@ -11,7 +14,13 @@ BASE_JSON = {
     "properties": dict()
 }
 
-CREATORS_AND_SHARE = [{"address": "", "share": 0}]  # change or add if more share parties
+# change or add if more share parties
+CREATORS_AND_SHARE = [
+    {
+        "address": "",
+        "share": 0
+    }
+]  
 
 # Change this to match your layer folder, not included special decoration
 LAYERS = ["layer-0",  # Background
@@ -34,18 +43,27 @@ SPECIAL_DECORATION_LAYER = "head-decoration"
 IMAGE_PATH = r"./artwork"
 ARKWORK_OUTPUT_PATH = r"./output"
 CONFIG_PATH = r"./config"
-NO_OF_ARTWORK = 1
+METADATA_PATH = os.path.join(ARKWORK_OUTPUT_PATH, "./_metadata.json")
+NO_OF_ARTWORK = 100
 
 SAVE_ARTWORK = True
 SHOW_ARTWORK = False
 
 
 def generate_nft():
-    generator = NFTGenerator(IMAGE_PATH, ARKWORK_OUTPUT_PATH, CONFIG_PATH, LAYERS, SPECIAL_DECORATION_LAYER, NO_OF_ARTWORK, CREATORS_AND_SHARE)
+    metadata_json = list()
+
+    print("NFT Generator: Generating NFT!")
+    generator = NFTGenerator(IMAGE_PATH, ARKWORK_OUTPUT_PATH, CONFIG_PATH, LAYERS, SPECIAL_DECORATION_LAYER, CREATORS_AND_SHARE)
     generator.set_isSave(SAVE_ARTWORK)
     generator.set_isShow(SHOW_ARTWORK)
     generator.set_base_metadata(BASE_JSON)
-    generator.generate_nft()
+    for i in range(NO_OF_ARTWORK):
+        generator.generate_nft()
+        metadata_json.append(deepcopy(generator.get_image_json()))
+
+    with open(METADATA_PATH, 'w', encoding='utf-8') as f:
+            json.dump(metadata_json, f, ensure_ascii=False, indent=4)
 
 
 if __name__ == "__main__":
