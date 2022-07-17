@@ -4,10 +4,10 @@ import LoginHolders from './LoginHolders'
 import Gallery from './Gallery';
 import {Metaplex} from '@metaplex-foundation/js';
 import {PublicKey} from '@solana/web3.js'
-import useAppContext from '../func/appContext'
+import useAppContext from './context/appContext'
 
 
-function Holders() {
+const  Holders:React.FC = () => {
   const { publicKey } = useWallet();
   const {connection} = useConnection();
   const {updateUserStatus,userStatus} = useAppContext();

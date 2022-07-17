@@ -11,7 +11,7 @@ import {
 import {WalletModalProvider} from '@solana/wallet-adapter-react-ui';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { clusterApiUrl } from '@solana/web3.js';
-import {AppProvider} from './func/appContext';
+import {AppProvider} from './components/context/appContext';
 import Navbar from './components/Navbar';
 import Main from './components/Main';
 import Mint from './components/Mint';
@@ -52,7 +52,6 @@ const App: React.FC = () => {
                 <Route path='evolve/:type' element={<Evolve />} />
               </Routes>
             </div>
-
               </Router>
             </div> 
           </AppProvider>

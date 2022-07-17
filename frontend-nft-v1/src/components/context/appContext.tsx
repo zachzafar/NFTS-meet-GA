@@ -1,13 +1,13 @@
 import React, {createContext,useReducer, useContext} from 'react';
-import appReducer,{ initialState,ActionKind,NFT} from './appReducer';
-
+import appReducer,{ initialState} from './appReducer';
+import {ActionKind,NFT} from '../types/types'
 export const AppContext = createContext(initialState);
 
 type ContextProviderProps = {
     children: React.ReactNode
 }
 export  const AppProvider = ({children}:ContextProviderProps) => {
-    const [state,dispatch] = useReducer(appReducer,initialState);
+    const [state,dispatch] = useReducer(appReducer,initialState);   
 
     const saveNFTs = (NFTs:NFT[]) => {
         dispatch({type:ActionKind.SAVE_NFTS,payload: {NFTs: NFTs}});

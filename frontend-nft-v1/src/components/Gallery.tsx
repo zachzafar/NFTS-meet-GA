@@ -3,13 +3,8 @@ import NFTcard from './NFTcard';
 import {useConnection, useWallet} from '@solana/wallet-adapter-react';
 import {Metaplex} from '@metaplex-foundation/js';
 import {PublicKey} from '@solana/web3.js';
-import useAppContext from '../func/appContext';
-
-interface NFT {
-  name: string,
-  image: string,
-  description: string,
-}
+import useAppContext from './context/appContext';
+import {NFT} from './types/types'
 
 const Gallery:React.FC = () => {
     const { connection } = useConnection();
@@ -29,6 +24,7 @@ const Gallery:React.FC = () => {
       let name:string;
       let description:string;
       let image:string;
+     // let DNA: string;
       let nftCollectionAddress;
       let nfts = await metaplex.nfts().findAllByOwner(publicKey)
       nfts = nfts.filter((nft)=> {
@@ -42,7 +38,8 @@ const Gallery:React.FC = () => {
           name = metadataList[i]['name'] ?? ''
           image = metadataList[i]['image'] ?? '';
           description = metadataList[i]['description'] ?? '';
-          nft = {name: name, image: image,  description: description }
+         // DNA = metadataList[i]['DNA'] ?? [];
+          nft = {name: name, image: image,  description: description}
           nftList.push(nft);
         }
         saveNFTs(nftList);
