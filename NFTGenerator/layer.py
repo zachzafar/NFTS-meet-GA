@@ -1,8 +1,4 @@
-from email.mime import image
 import os
-import random
-from PIL import Image
-import re
 
 class Layer:
 

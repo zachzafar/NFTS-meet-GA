@@ -4,12 +4,15 @@ from layer import Layer
 import random
 import csv
 from datetime import datetime
-import numpy as np
+import json
 
 class NFTGenerator:
-    def __init__(self, images_path: str, output_path: str, config_path: str, layers: list(), no_of_artwork: int):
+    def __init__(self, images_path: str, output_path: str, config_path: str, layers: list(), special_decoration_layer: str, no_of_artwork: int, creators_and_share: list()):
+        self.layers = layers
+        self.special_decoration_layer = special_decoration_layer
         self.body_image_layers = self.load_body_image_layers(images_path, layers) # a 2D array contain all the layers images path
-        self.head_decoration_layers = self.load_head_decoration_layers(images_path) # an array contain all the images path of head-decoration
+        self.head_decoration_layers = self.load_special_decoration_layers(images_path, special_decoration_layer) # an array contain all the images path of head-decoration
+        self.creators_and_share = creators_and_share
         self.datetime_now = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
         self.output_path = output_path
         self.config_path = config_path
@@ -17,12 +20,28 @@ class NFTGenerator:
         os.makedirs(self.output_path, exist_ok=True)
         self.db_cache = list()
         self.db_file = os.path.join(config_path, "db.csv")
+        self.isSave = False
+        self.isShow = False
+        self.base_json = {}
+        self.metadata_json = list()
         if os.path.exists(self.db_file):
             with open(self.db_file, newline='') as csvfile:
                 self.db_cache = list(csv.reader(csvfile))
             os.rename(self.db_file, os.path.join(config_path, self.datetime_now + ".csv"))
 
-        print(self.db_cache)
+        #print(self.db_cache)
+
+    
+    def set_isSave(self, isSave: bool):
+        self.isSave = isSave
+
+
+    def set_isShow(self, isShow: bool):
+        self.isShow = isShow
+
+
+    def set_base_metadata(self, base_messages: dict):
+        self.base_json = base_messages
 
 
     def load_body_image_layers(self, images_path: str, layers: list()):
@@ -34,8 +53,8 @@ class NFTGenerator:
         return rtn_layers
 
 
-    def load_head_decoration_layers(self, images_path):
-        layer_path = os.path.join(images_path, "head-decoration")
+    def load_special_decoration_layers(self, images_path: str, layer_folder_name: str):
+        layer_path = os.path.join(images_path, layer_folder_name)
         layer = Layer(layer_path)
         return layer.get_all_image_path()
 
@@ -59,27 +78,34 @@ class NFTGenerator:
 
     # Creates the artwork based on the indexes
     def create_artwork(self, values):
+        artwork_metadata_attributes = list()
         length = len(values)
         artwork = Image.open(self.body_image_layers[0][values[0] - 1]).convert('RGBA')
+        artwork_metadata_attributes.append(dict(trait_type = self.layers[0], value = os.path.basename(self.body_image_layers[0][values[0] - 1])))
 
         # special case for the helmet
         if values[13] == 14:
             artwork = Image.alpha_composite(artwork, Image.open(self.body_image_layers[13][values[13] - 1])).convert('RGBA')
+            artwork_metadata_attributes.append(dict(trait_type = self.layers[13], value = os.path.basename(self.body_image_layers[13][values[13] - 1])))
             length -= 1
 
         artwork = Image.alpha_composite(artwork, Image.open(self.body_image_layers[1][values[1] - 1])).convert('RGBA')
+        artwork_metadata_attributes.append(dict(trait_type = self.layers[1], value = os.path.basename(self.body_image_layers[1][values[1] - 1])))
 
         # head decoration
         if values[1] != 9 and values[8] in [0, 9, 21, 22, 23, 24, 41, 42] and values[12] not in [25, 27] and values[13] in [0, 10, 14, 15]:
             artwork = Image.alpha_composite(artwork, Image.open(self.head_decoration_layers[values[1] - 1])).convert('RGBA')
-            print("head")
+            artwork_metadata_attributes.append(dict(trait_type = self.special_decoration_layer, value = os.path.basename(self.head_decoration_layers[values[1] - 1])))
 
         for i in range(2, length):
             try:
                 if values[i] > 0:
                     artwork = Image.alpha_composite(artwork, Image.open(self.body_image_layers[i][values[i] - 1])).convert('RGBA')
+                    artwork_metadata_attributes.append(dict(trait_type = self.layers[i], value = os.path.basename(self.body_image_layers[i][values[i] - 1])))
             except:
                 raise Exception("Layer {}: index {}".format(i, values[i]))
+
+        self.base_json["attributes"] = artwork_metadata_attributes
 
         return artwork
 
@@ -341,10 +367,8 @@ class NFTGenerator:
 
         return True
 
-
-    def generate_nft(self):
-        print("NFTGenerator: Generating NFT!")
-
+    
+    def check_and_create_artwork(self):
         valide_value = False
         values = list()
         
@@ -356,17 +380,47 @@ class NFTGenerator:
             self.db_cache.append(values)
 
             # show the feature of the new artwork
-            for i in range(len(values)):
-                print(self.body_image_layers[i][values[i] - 1])
+            """ for j in range(len(values)):
+                print(self.body_image_layers[j][values[j] - 1]) """
             
             artwork = self.create_artwork(values)
-            artwork.show()
+            json_filename = str(i) + ".json"
+            files = list()
+            files.append(dict(uri = json_filename, type = "image/png"))
+            self.base_json["properties"] = dict(files = files)
+            self.base_json["properties"].update(dict(category = "image"))
+            self.base_json["properties"].update(dict(creators = self.creators_and_share))
+            self.metadata_json.append(self.base_json)
+
+            if self.isSave:
+                filename = str(i) + ".png"
+                self.save_image(filename, artwork)
+                print(filename + " created.")
+                with open(os.path.join(self.output_path, json_filename), 'w', encoding='utf-8') as f:
+                    json.dump(self.base_json, f, ensure_ascii=False, indent=4)
+            if self.isShow:
+                artwork.show()
             valide_value = False
 
-        #save the db_cache into a csv file
+    
+    def save_to_db(self):
         with open(os.path.join(self.config_path, "db.csv"), "w+") as my_csv:
             csvWriter = csv.writer(my_csv, delimiter=',')
             for row in self.db_cache:
                 csvWriter.writerow(row)
+
+
+    def generate_nft(self):
+        print("NFTGenerator: Generating NFT!")
+
+        self.check_and_create_artwork()
+
+        #save the db_cache into a csv file
+        self.save_to_db()
+
+        print(json.dumps(self.metadata_json))
+
+        with open(os.path.join(self.output_path, "_metadata.json"), 'w', encoding='utf-8') as f:
+            json.dump(self.metadata_json, f, ensure_ascii=False, indent=4)
 
             
