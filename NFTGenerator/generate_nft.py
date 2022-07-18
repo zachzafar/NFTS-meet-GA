@@ -44,7 +44,7 @@ IMAGE_PATH = r"./artwork"
 ARKWORK_OUTPUT_PATH = r"./output"
 CONFIG_PATH = r"./config"
 METADATA_PATH = os.path.join(ARKWORK_OUTPUT_PATH, "./_metadata.json")
-NO_OF_ARTWORK = 100
+NO_OF_ARTWORK = 5
 
 SAVE_ARTWORK = True
 SHOW_ARTWORK = False
@@ -52,6 +52,10 @@ SHOW_ARTWORK = False
 
 def generate_nft():
     metadata_json = list()
+
+    if os.path.exists(METADATA_PATH):
+        with open(METADATA_PATH) as f:
+            metadata_json = json.load(f)
 
     print("NFT Generator: Generating NFT!")
     generator = NFTGenerator(IMAGE_PATH, ARKWORK_OUTPUT_PATH, CONFIG_PATH, LAYERS, SPECIAL_DECORATION_LAYER, CREATORS_AND_SHARE)
