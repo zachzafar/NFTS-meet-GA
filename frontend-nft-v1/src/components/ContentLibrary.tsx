@@ -7,10 +7,11 @@ import {NFT} from './types/types';
 
 interface Props {
   contentType:string;
-  setImageUrls: (img:string) => void;
+  setParentNFT: (NFT:NFT) => void;
+  mutate: (NFT:NFT) => void;
 }
 
-const ContentLibrary: React.FC<Props> = ({contentType,setImageUrls}) => {
+const ContentLibrary: React.FC<Props> = ({contentType,setParentNFT,mutate}) => {
   const [dudes,setDudes] = useState<NFT[]>([])
   const {NFTs} =useAppContext();
   
@@ -20,7 +21,8 @@ const ContentLibrary: React.FC<Props> = ({contentType,setImageUrls}) => {
 
   if (contentType === 'dudes'){
     stack = (dudes.map(d => (
-        <Card sx={{ maxWidth: 145 }} key={key++} onClick={() => setImageUrls(d.image)}>
+        <div key={key++} className='p-5'>
+        <Card  sx={{ width: 145}}  onClick={() => setParentNFT(d)}>
           <CardMedia 
           component="img"
           height="240"
@@ -28,11 +30,14 @@ const ContentLibrary: React.FC<Props> = ({contentType,setImageUrls}) => {
           alt="dude">
           </CardMedia>
         </Card>
+        </div>
       )))
   } else if(contentType !== '') {
       let object = attributeTypes[contentType]
+      console.log(object)
       stack = (Object.keys(object).map((Key) => (
-        <Card sx={{ maxWidth: 145 }} key={key++}>
+        <div key={key++} className='p-5'>
+        <Card className='p-1' sx={{ width: 145 }} >
           <CardMedia 
           component="img"
           height="240"
@@ -40,6 +45,7 @@ const ContentLibrary: React.FC<Props> = ({contentType,setImageUrls}) => {
           alt="dude">
           </CardMedia>
         </Card>
+        </div>
       )))
   }
 
@@ -48,7 +54,7 @@ const ContentLibrary: React.FC<Props> = ({contentType,setImageUrls}) => {
   },[NFTs]);
   
   return(
-    <div className='w-full bg-sky-800 h-full overflow-x-scroll'>
+    <div className='w-70 bg-sky-800 h-full overflow-y-scroll '>
       {stack}
     </div>);
 }

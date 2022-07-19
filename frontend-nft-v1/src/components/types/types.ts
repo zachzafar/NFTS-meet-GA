@@ -7,7 +7,7 @@ export interface NFT {
     name: string,
     image: string,
     description: string,
-    DNA?: number[]
+    DNA?: string[]
 }
 
 export interface Action {

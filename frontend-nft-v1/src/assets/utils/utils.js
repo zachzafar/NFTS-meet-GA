@@ -1,6 +1,9 @@
 function importAll(r) {
   let images = {};
-  r.keys().map((item) => (images[item.replace('./', '')] = r(item)));
+  let key = 0;
+  r.keys().map(
+    (item) => (images[item.replace(item, (key++).toString())] = r(item))
+  );
   return images;
 }
 
