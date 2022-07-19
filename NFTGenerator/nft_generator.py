@@ -7,7 +7,7 @@ from datetime import datetime
 import json
 
 class NFTGenerator:
-    def __init__(self, images_path: str, output_path: str, config_path: str, layers: list(), special_decoration_layer: str, no_of_artwork: int, creators_and_share: list()):
+    def __init__(self, images_path: str, output_path: str, config_path: str, layers: list(), special_decoration_layer: str, creators_and_share: list()):
         self.layers = layers
         self.special_decoration_layer = special_decoration_layer
         self.body_image_layers = self.load_body_image_layers(images_path, layers) # a 2D array contain all the layers images path
@@ -16,20 +16,21 @@ class NFTGenerator:
         self.datetime_now = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
         self.output_path = output_path
         self.config_path = config_path
-        self.no_of_artwork = no_of_artwork
-        os.makedirs(self.output_path, exist_ok=True)
         self.db_cache = list()
         self.db_file = os.path.join(config_path, "db.csv")
         self.isSave = False
         self.isShow = False
         self.base_json = {}
         self.metadata_json = list()
+
+        os.makedirs(self.output_path, exist_ok=True)
+        os.makedirs(self.config_path, exist_ok=True)
+
+        # read the csv file and retrieve all the existing NFT value to cache
         if os.path.exists(self.db_file):
             with open(self.db_file, newline='') as csvfile:
                 self.db_cache = list(csv.reader(csvfile))
             os.rename(self.db_file, os.path.join(config_path, self.datetime_now + ".csv"))
-
-        #print(self.db_cache)
 
     
     def set_isSave(self, isSave: bool):
@@ -42,6 +43,10 @@ class NFTGenerator:
 
     def set_base_metadata(self, base_messages: dict):
         self.base_json = base_messages
+
+    
+    def get_image_json(self):
+        return self.base_json
 
 
     def load_body_image_layers(self, images_path: str, layers: list()):
@@ -59,8 +64,25 @@ class NFTGenerator:
         return layer.get_all_image_path()
 
 
-    def save_image(self, filename: str, image: Image):
-        image.save(os.path.join(self.output_path, filename))
+    def save_image(self, image_filename: str, image: Image):
+        image.save(os.path.join(self.output_path, image_filename))
+
+
+    def save_json(self, json_filename: str, image_filename: str):
+        files = list()
+        files.append(dict(uri = image_filename, type = "image/png"))
+        self.base_json["properties"].update(dict(files = files))
+        self.base_json["properties"].update(dict(category = "image"))
+        self.base_json["properties"].update(dict(creators = self.creators_and_share))
+        with open(os.path.join(self.output_path, json_filename), 'w', encoding='utf-8') as f:
+            json.dump(self.base_json, f, ensure_ascii=False, indent=4)
+
+    
+    def save_to_db(self):
+        with open(os.path.join(self.config_path, "db.csv"), "w+") as my_csv:
+            csvWriter = csv.writer(my_csv, delimiter=',')
+            for row in self.db_cache:
+                csvWriter.writerow(row)
 
 
     def generate_random_values(self):
@@ -105,7 +127,7 @@ class NFTGenerator:
             except:
                 raise Exception("Layer {}: index {}".format(i, values[i]))
 
-        self.base_json["attributes"] = artwork_metadata_attributes
+        self.base_json["attributes"]= artwork_metadata_attributes
 
         return artwork
 
@@ -368,59 +390,37 @@ class NFTGenerator:
         return True
 
     
-    def check_and_create_artwork(self):
+    def validate_and_create_artwork(self):
         valide_value = False
         values = list()
+        the_next_no_of_artwork = len(self.db_cache)
         
-        for i in range(self.no_of_artwork):
-            while not valide_value:
-                values = self.generate_random_values()
-                valide_value = self.validate(values)
+        #for i in range(self.no_of_artwork):
+        while not valide_value:
+            values = self.generate_random_values()
+            valide_value = self.validate(values)
 
-            self.db_cache.append(values)
+        self.db_cache.append(values)
+        
+        artwork = self.create_artwork(values)
 
-            # show the feature of the new artwork
-            """ for j in range(len(values)):
-                print(self.body_image_layers[j][values[j] - 1]) """
-            
-            artwork = self.create_artwork(values)
-            json_filename = str(i) + ".json"
-            files = list()
-            files.append(dict(uri = json_filename, type = "image/png"))
-            self.base_json["properties"] = dict(files = files)
-            self.base_json["properties"].update(dict(category = "image"))
-            self.base_json["properties"].update(dict(creators = self.creators_and_share))
+        if self.isSave:
+            image_filename = str(the_next_no_of_artwork) + ".png"
+            json_filename = str(the_next_no_of_artwork) + ".json"
+
+            self.save_image(image_filename, artwork)
+            print(image_filename + " created.")
+            self.save_json(json_filename, image_filename)
+            print(json_filename + " created.")           
+
             self.metadata_json.append(self.base_json)
-
-            if self.isSave:
-                filename = str(i) + ".png"
-                self.save_image(filename, artwork)
-                print(filename + " created.")
-                with open(os.path.join(self.output_path, json_filename), 'w', encoding='utf-8') as f:
-                    json.dump(self.base_json, f, ensure_ascii=False, indent=4)
-            if self.isShow:
-                artwork.show()
-            valide_value = False
-
-    
-    def save_to_db(self):
-        with open(os.path.join(self.config_path, "db.csv"), "w+") as my_csv:
-            csvWriter = csv.writer(my_csv, delimiter=',')
-            for row in self.db_cache:
-                csvWriter.writerow(row)
+        if self.isShow:
+            artwork.show()
 
 
     def generate_nft(self):
-        print("NFTGenerator: Generating NFT!")
 
-        self.check_and_create_artwork()
+        self.validate_and_create_artwork()
 
         #save the db_cache into a csv file
         self.save_to_db()
-
-        print(json.dumps(self.metadata_json))
-
-        with open(os.path.join(self.output_path, "_metadata.json"), 'w', encoding='utf-8') as f:
-            json.dump(self.metadata_json, f, ensure_ascii=False, indent=4)
-
-            

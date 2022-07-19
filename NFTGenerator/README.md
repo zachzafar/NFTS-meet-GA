@@ -1,11 +1,17 @@
 # NFTGenerator
 
-under the project folder:
+working with virtual environment under the project folder:
 
-1. python -m venv venv_name
-2. source venv_name/bin/activate
-3. python -m pip install requirement.txt
+### `python -m venv venv_name`
+### `source venv_name/bin/activate`
+### `python -m pip install requirement.txt`
 
-Generate NFT assest and meta data
+Before artwork generation
+put all your layer into ./artwork/
 
-run: python generate_nft.py
+Generate arkwork and meta data
+
+run: 
+### `python generate_nft.py`
+
+after execute generate_nft.py. folder config and output will be create. metadata.json and all artwork will be generated and store under output folder. a CSV file will store under ./config/
