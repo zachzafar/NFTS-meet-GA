@@ -4,10 +4,12 @@ export enum ActionKind {
 }
 
 export interface NFT {
+    mint: string;
+    parentMintAddresses?: string[];
     name: string,
     image: string,
     description: string,
-    DNA?: string[]
+    DNA: string
 }
 
 export interface Action {

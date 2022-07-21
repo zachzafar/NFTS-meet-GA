@@ -5,6 +5,8 @@ import {Metaplex} from '@metaplex-foundation/js';
 import {PublicKey} from '@solana/web3.js';
 import useAppContext from './context/appContext';
 import {NFT} from './types/types'
+import {randomDudeDNAGenerator} from '../function'
+
 
 const Gallery:React.FC = () => {
     const { connection } = useConnection();
@@ -24,7 +26,8 @@ const Gallery:React.FC = () => {
       let name:string;
       let description:string;
       let image:string;
-     // let DNA: string;
+      let mint:string;
+      let DNA:string;
       let nftCollectionAddress;
       let nfts = await metaplex.nfts().findAllByOwner(publicKey)
       nfts = nfts.filter((nft)=> {
@@ -38,8 +41,15 @@ const Gallery:React.FC = () => {
           name = metadataList[i]['name'] ?? ''
           image = metadataList[i]['image'] ?? '';
           description = metadataList[i]['description'] ?? '';
-         // DNA = metadataList[i]['DNA'] ?? [];
-          nft = {name: name, image: image,  description: description}
+          DNA = randomDudeDNAGenerator() ?? [''];
+          mint = nfts[i]['mint'].toString() ?? ''
+          /*
+          if(metadataList[i]['attributes'] !== undefined){
+              let attributes = metadataList[i]['attributes']
+              if (attributes !== undefined) console.log(attributes[3]['value'])
+          }
+          */
+          nft = {name: name, image: image,  description: description, DNA:DNA, mint:mint}
           nftList.push(nft);
         }
         saveNFTs(nftList);

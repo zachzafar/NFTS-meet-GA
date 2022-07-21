@@ -21,6 +21,7 @@ const Main:React.FC = () => {
       let name:string;
       let description:string;
       let image:string;
+      let mint:string;
       const nfts = await metaplex.nfts().findAllByCandyMachine(candyMachine,2);
       const nftsmetadata = nfts.map(nft => nft.metadataTask.run());
       Promise.all(nftsmetadata).then(metadataList =>{
@@ -28,7 +29,8 @@ const Main:React.FC = () => {
           name = metadataList[i]['name'] ?? ''
           image = metadataList[i]['image'] ?? '';
           description = metadataList[i]['description'] ?? '';
-          nft = {name: name, image: image,  description: description }
+          mint = nfts[i]['mint'].toString() ?? ''
+          nft = {name: name, image: image,  description: description, DNA:'', mint: mint}
           nftList.push(nft);
         }
         setNFTS(nftList);

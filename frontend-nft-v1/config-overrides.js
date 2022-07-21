@@ -25,12 +25,12 @@ module.exports = function override(webpackConfig) {
     stream: require.resolve('stream-browserify'),
     util: require.resolve('util'),
     assert: require.resolve('assert'),
+    process: require.resolve('process'),
     https: false,
     http: false,
     querystring: false,
     url: false,
     fs: false,
-    process: false,
     path: false,
     zlib: false,
   };
