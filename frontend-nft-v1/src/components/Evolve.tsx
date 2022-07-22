@@ -6,8 +6,9 @@ import ContentLibrary from './ContentLibrary';
 import * as attributes from '../assets/utils/utils'
 import {NFT} from './types/types'
 import mergeImages from 'merge-images';
-//import {Metaplex} from '@metaplex-foundation/js'
-//import { useConnection } from '@solana/wallet-adapter-react';
+import {Metaplex, useMetaplexFile} from '@metaplex-foundation/js'
+import { useConnection } from '@solana/wallet-adapter-react';
+
 
 const Evolve:React.FC = () => {
   const [contentType, setContentType] = useState('');
@@ -15,11 +16,11 @@ const Evolve:React.FC = () => {
   const [parent2NFT, setparent2NFT] = useState<NFT>()
   const [child1NFT, setchild1NFT] = useState<NFT>()
   const [child2NFT, setchild2NFT] = useState<NFT>()
- // const {connection} = useConnection();
+  const {connection} = useConnection();
   const {type}= useParams();
   let cards:ReactJSXElement;
   let sidebar:ReactJSXElement;
-  let sidebarOptions:string[];
+  let sidebarOptions:string[] = ['dudes','head decorations','layer 0','layer 1','layer 2','layer 3','layer 4','layer 5','layer 6','layer 7','layer 8','layer 9','layer 10','layer 11','layer 12','layer 13']
   let key = 0;
     
   const contentTypeMutator = (newContentType: string) => {
@@ -94,16 +95,20 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
     generateDudeNFT([parent1NFT.mint,parent2NFT.mint],child2DNA,setchild2NFT)
   }
 
-  const mutate = (parentNFT:NFT) => {
+  const mutate = (parentNFT:NFT,attributeType?:string,attributeIndex?:string) => {
     if(parentNFT.DNA === undefined) {
       console.log('mutate function was called')
       return
     }
     let childDNA = parentNFT.DNA.split(',')
+    if(attributeType && attributeIndex){
+      let attribute = sidebarOptions.indexOf(attributeType)
+      childDNA[attribute - 1] = attributeIndex
+    }
     generateDudeNFT([parentNFT.mint],childDNA,setchild1NFT);
     console.log('summin happened')
   }
-/*
+
   const mint =  async (NFT:NFT) => {
     let parentAddress1 = ''
     let parentAddress2 = ''
@@ -111,10 +116,11 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
       parentAddress1 = NFT.parentMintAddresses[0] ?? ''
       parentAddress2 = NFT.parentMintAddresses[1] ?? ''
     }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const metaplex = new Metaplex(connection)
     const { uri } = await metaplex.nfts().uploadMetadata({
       "name": "Number #0001",
-  "symbol": "NB",
+    "symbol": "NB",
   "description": "Collection of 10 numbers on the blockchain. This is the number 1/10.",
   "seller_fee_basis_points": 500,
   "image": NFT.image,
@@ -145,9 +151,23 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
   }
 
   const burn = (NFT:NFT) => {
+    
+  }
+
+  const mintAndBurn = () => {
+    if(!child1NFT && !child2NFT){return}
+    if(contentType === 'mutate' && child1NFT && parent1NFT){
+      mint(child1NFT)
+      burn(parent1NFT)
+    } else if (contentType === 'mutate' && child1NFT && child2NFT && parent1NFT && parent2NFT){
+      mint(child1NFT)
+      mint(child2NFT)
+      burn(parent1NFT)
+      burn(parent2NFT)
+    }
 
   }
-*/
+
   switch (type) {
     case 'mutate':
     if(parent1NFT && child1NFT === undefined){mutate(parent1NFT)}
@@ -186,7 +206,8 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
       >
         <Paper variant='outlined' elevation={0} />
       </Box>}
-        </Card>  
+        </Card>
+        {child1NFT ? <Button variant='outlined' onClick={() => {mintAndBurn()}}>Mint</Button> : null}
         </div>)  
     break;
     case 'crossover':
@@ -231,12 +252,16 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
       </div>
       <div className='flex flex-row'>
         <Card sx={{ maxWidth: 300 }}>
-          {child1NFT ? <CardMedia 
+          {child1NFT ? 
+          <div>
+          <CardMedia 
           component="img"
           height="300"
           image={child1NFT.image}
           alt="dude">
-          </CardMedia> : <Box
+          </CardMedia> 
+          </div>
+          : <Box
         sx={{
           '& > :not(style)': {
             width: 300,
@@ -266,14 +291,14 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
       </Box>}
         </Card>
       </div>
-          
+     {child1NFT && child2NFT ? <Button variant='outlined' onClick={() => {mintAndBurn()}}>Mint</Button> : null}    
         </div>) )  
     break;
     default:
       cards = (<div>Hmm something wrong here</div>)
   }
 
-  sidebarOptions = ['dudes','head decorations','layer 0','layer 1','layer 2','layer 3','layer 4','layer 5','layer 6','layer 7','layer 8','layer 9','layer 10','layer 11','layer 12','layer 13']
+  
   sidebar =  ( <div className='h-full flex flex-row'>
       <div className='flex flex-col w-40 bg-sky-900 overflow-x-hidden justify-evenly' >
         {sidebarOptions.map(option => (
@@ -282,7 +307,7 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
           </Button>
         ))}
       </div>
-      {contentType === '' ? null: <ContentLibrary mutate={mutate} setParentNFT={setParentNFT} contentType={contentType} /> }
+      {contentType === '' ? null: <ContentLibrary mutate={mutate} setParentNFT={setParentNFT} contentType={contentType} parentNFT={parent1NFT}/> }
     </div>)
 
     useEffect(() => {
@@ -296,6 +321,7 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
   <div className='flex flex-row h-full'>
     {sidebar}
     {cards}
+    <input type="file" id="upload" className='hidden' multiple={true}></input>
   </div>
   );
 }

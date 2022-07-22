@@ -8,10 +8,11 @@ import {NFT} from './types/types';
 interface Props {
   contentType:string;
   setParentNFT: (NFT:NFT) => void;
-  mutate: (NFT:NFT) => void;
+  mutate: (NFT:NFT,attributeType:string,attributeIndex:string) => void;
+  parentNFT:NFT|undefined;
 }
 
-const ContentLibrary: React.FC<Props> = ({contentType,setParentNFT,mutate}) => {
+const ContentLibrary: React.FC<Props> = ({contentType,setParentNFT,mutate,parentNFT}) => {
   const [dudes,setDudes] = useState<NFT[]>([])
   const {NFTs} =useAppContext();
   
@@ -34,10 +35,9 @@ const ContentLibrary: React.FC<Props> = ({contentType,setParentNFT,mutate}) => {
       )))
   } else if(contentType !== '') {
       let object = attributeTypes[contentType]
-      console.log(object)
       stack = (Object.keys(object).map((Key) => (
         <div key={key++} className='p-5'>
-        <Card className='p-1' sx={{ width: 145 }} >
+        <Card className='p-1' sx={{ width: 145 }} onClick={()=>(parentNFT ? mutate(parentNFT,contentType,Key) : null)}>
           <CardMedia 
           component="img"
           height="240"
