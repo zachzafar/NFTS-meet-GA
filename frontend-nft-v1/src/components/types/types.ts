@@ -9,7 +9,7 @@ export interface NFT {
     name: string,
     image: string,
     description: string,
-    DNA: string
+    DNA: string,
 }
 
 export interface Action {

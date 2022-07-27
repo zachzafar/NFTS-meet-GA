@@ -63,7 +63,7 @@ const Gallery:React.FC = () => {
 
   
   return (
-    <div>
+    <div className="grid grid-cols-4 gap-1 container mx-auto mt-10">
         {NFTs.map(nft => (
            <NFTcard key={key++}image={nft.image} title={nft.name} description={nft.description}/>
         ))}

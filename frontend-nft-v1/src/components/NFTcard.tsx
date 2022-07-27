@@ -15,11 +15,11 @@ interface Props {
 
 const NFTcard : React.FC<Props> = ({image,title,description}) => {
   return (
-    <Card sx={{ maxWidth: 145 }}>
+    <Card sx={{ maxWidth: 250 }}>
       <CardActionArea>
         <CardMedia
           component="img"
-          height="240"
+          height="300"
           image={image}
           alt="dude"
         />

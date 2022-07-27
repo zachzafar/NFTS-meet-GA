@@ -6,8 +6,8 @@ import ContentLibrary from './ContentLibrary';
 import * as attributes from '../assets/utils/utils'
 import {NFT} from './types/types'
 import mergeImages from 'merge-images';
-import {Metaplex, useMetaplexFile} from '@metaplex-foundation/js'
-import { useConnection } from '@solana/wallet-adapter-react';
+import {bundlrStorage, Metaplex, useMetaplexFileFromBrowser, walletAdapterIdentity} from '@metaplex-foundation/js'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 
 
 const Evolve:React.FC = () => {
@@ -17,12 +17,13 @@ const Evolve:React.FC = () => {
   const [child1NFT, setchild1NFT] = useState<NFT>()
   const [child2NFT, setchild2NFT] = useState<NFT>()
   const {connection} = useConnection();
+  const  wallet = useWallet();
   const {type}= useParams();
   let cards:ReactJSXElement;
   let sidebar:ReactJSXElement;
   let sidebarOptions:string[] = ['dudes','head decorations','layer 0','layer 1','layer 2','layer 3','layer 4','layer 5','layer 6','layer 7','layer 8','layer 9','layer 10','layer 11','layer 12','layer 13']
   let key = 0;
-    
+
   const contentTypeMutator = (newContentType: string) => {
     if(contentType === newContentType){
       setContentType('')
@@ -67,12 +68,13 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
   }).then(image =>{
       childNFT = { mint: '' , name: 'New Kid', image: image, description:'new description',DNA:childDNA, parentMintAddresses: parents}
       setNft(childNFT);
+      
   })
 }
 
   const crossover = (parent1NFT:NFT, parent2NFT:NFT) => {
     if(parent1NFT.DNA === undefined || parent2NFT.DNA === undefined) {
-      console.log("crossover function was called")
+      console.log("crossover function was called but DNA in parents not present")
       return
     }
     let parent1DNA = parent1NFT.DNA.split(',')
@@ -97,7 +99,7 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
 
   const mutate = (parentNFT:NFT,attributeType?:string,attributeIndex?:string) => {
     if(parentNFT.DNA === undefined) {
-      console.log('mutate function was called')
+      console.log('mutate function was called but parent dna not present')
       return
     }
     let childDNA = parentNFT.DNA.split(',')
@@ -106,29 +108,41 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
       childDNA[attribute - 1] = attributeIndex
     }
     generateDudeNFT([parentNFT.mint],childDNA,setchild1NFT);
-    console.log('summin happened')
   }
 
   const mint =  async (NFT:NFT) => {
+    if (wallet === null) {return};
+    console.log('minting....')
+    let res = await fetch(NFT.image)
+    let data = await res.blob()
+    let metadata = {
+      type: 'image/png'
+    }
+    let file = new File([data],'image.png',metadata)
     let parentAddress1 = ''
     let parentAddress2 = ''
     if(NFT.parentMintAddresses !== undefined){
       parentAddress1 = NFT.parentMintAddresses[0] ?? ''
       parentAddress2 = NFT.parentMintAddresses[1] ?? ''
     }
+    
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const metaplex = new Metaplex(connection)
+    const metaplex = new Metaplex(connection).use(walletAdapterIdentity(wallet)).use(bundlrStorage({
+    address: 'https://devnet.bundlr.network',
+    providerUrl: 'https://api.devnet.solana.com',
+    timeout: 60000,
+}));
     const { uri } = await metaplex.nfts().uploadMetadata({
-      "name": "Number #0001",
+      "name": "new Number #0001",
     "symbol": "NB",
   "description": "Collection of 10 numbers on the blockchain. This is the number 1/10.",
   "seller_fee_basis_points": 500,
-  "image": NFT.image,
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  "image": await useMetaplexFileFromBrowser(file),
   "attributes": [
     { "trait_type": "DNA", "value": NFT.DNA },
     { "trait_type": "Parent-1", "value": parentAddress1 },
     { "trait_type": "Parent-2", "value": parentAddress2 },
-    { "trait_type": "creation-Type", "value": "genesis" }
   ],
   "properties": {
     "creators": [
@@ -145,21 +159,23 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
 
     const { nft } = await metaplex.nfts().create({
       uri: uri,
-      name: "A new dude",
-      sellerFeeBasisPoints: 500
     })
+    console.log(nft)
   }
 
   const burn = (NFT:NFT) => {
-    
+    return 
   }
 
   const mintAndBurn = () => {
     if(!child1NFT && !child2NFT){return}
-    if(contentType === 'mutate' && child1NFT && parent1NFT){
+    console.log('minting and burning')
+    if(child1NFT && parent1NFT){
+      console.log('minting new mutation');
       mint(child1NFT)
       burn(parent1NFT)
-    } else if (contentType === 'mutate' && child1NFT && child2NFT && parent1NFT && parent2NFT){
+    } else if (child1NFT && child2NFT && parent1NFT && parent2NFT){
+      console.log('minting new crossover')
       mint(child1NFT)
       mint(child2NFT)
       burn(parent1NFT)
@@ -291,7 +307,13 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
       </Box>}
         </Card>
       </div>
-     {child1NFT && child2NFT ? <Button variant='outlined' onClick={() => {mintAndBurn()}}>Mint</Button> : null}    
+     {child1NFT && child2NFT ? 
+      <form onSubmit={(event) => {mintAndBurn()}}>
+      <input type='file' value={child1NFT.image}/>
+
+      <input type="submit" value="Mint"></input>
+      </form>
+     :null}    
         </div>) )  
     break;
     default:
@@ -321,7 +343,7 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
   <div className='flex flex-row h-full'>
     {sidebar}
     {cards}
-    <input type="file" id="upload" className='hidden' multiple={true}></input>
+   
   </div>
   );
 }
