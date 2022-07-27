@@ -53,12 +53,8 @@ SHOW_ARTWORK = False
 def generate_nft():
     metadata_json = list()
 
-    if os.path.exists(METADATA_PATH):
-        with open(METADATA_PATH) as f:
-            metadata_json = json.load(f)
-
     print("NFT Generator: Generating NFT!")
-    generator = NFTGenerator(IMAGE_PATH, ARKWORK_OUTPUT_PATH, CONFIG_PATH, LAYERS, SPECIAL_DECORATION_LAYER, CREATORS_AND_SHARE)
+    generator = NFTGenerator(images_path = IMAGE_PATH, output_path = ARKWORK_OUTPUT_PATH, config_path = CONFIG_PATH, layers = LAYERS, special_decoration_layer = SPECIAL_DECORATION_LAYER, creators_and_share = CREATORS_AND_SHARE)
     generator.set_isSave(SAVE_ARTWORK)
     generator.set_isShow(SHOW_ARTWORK)
     generator.set_base_metadata(BASE_JSON)
