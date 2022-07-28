@@ -6,7 +6,6 @@ import csv
 from datetime import datetime
 import json
 from specialRule import SpecialRule
-from copy import deepcopy
 
 class NFTGenerator:
     def __init__(self, images_path: str, output_path: str, config_path: str, layers: list(), special_decoration_layer: str, creators_and_share: list()):
@@ -76,6 +75,7 @@ class NFTGenerator:
     def save_json(self, json_filename: str, image_filename: str):
         files = list()
         files.append(dict(uri = image_filename, type = "image/png"))
+        self.base_json["image"] = image_filename
         self.base_json["properties"].update(dict(files = files))
         self.base_json["properties"].update(dict(category = "image"))
         self.base_json["properties"].update(dict(creators = self.creators_and_share))
@@ -140,7 +140,7 @@ class NFTGenerator:
         else:
             values.insert(0, -1)
 
-        artwork_metadata_attributes.append(dict(trait_type = 'DNA', value = values))
+        artwork_metadata_attributes.append(dict(trait_type = 'DNA', value = str(values)))
 
         return artwork, artwork_metadata_attributes
 
