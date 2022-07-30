@@ -4,7 +4,7 @@ working with virtual environment under the project folder:
 
 ### `python -m venv venv_name`
 ### `source venv_name/bin/activate`
-### `python - pip install requirement.txt`
+### `python -r pip install requirement.txt`
 
 Before artwork generation
 put all your layer into ./artwork/
