@@ -30,7 +30,7 @@ const Main:React.FC = () => {
           image = metadataList[i]['image'] ?? '';
           description = metadataList[i]['description'] ?? '';
           mint = nfts[i]['mint'].toString() ?? ''
-          nft = {name: name, image: image,  description: description, DNA:'', mint: mint}
+          nft = {name: name, image: image,  description: description, DNA:'', mint: mint,}
           nftList.push(nft);
         }
         setNFTS(nftList);

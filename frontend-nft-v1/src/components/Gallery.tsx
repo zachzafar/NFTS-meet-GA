@@ -5,8 +5,6 @@ import {Metaplex} from '@metaplex-foundation/js';
 import {PublicKey} from '@solana/web3.js';
 import useAppContext from './context/appContext';
 import {NFT} from './types/types'
-import {randomDudeDNAGenerator} from '../function'
-
 
 const Gallery:React.FC = () => {
     const { connection } = useConnection();
@@ -41,14 +39,11 @@ const Gallery:React.FC = () => {
           name = metadataList[i]['name'] ?? ''
           image = metadataList[i]['image'] ?? '';
           description = metadataList[i]['description'] ?? '';
-          DNA = randomDudeDNAGenerator() ?? [''];
           mint = nfts[i]['mint'].toString() ?? ''
-          /*
           if(metadataList[i]['attributes'] !== undefined){
               let attributes = metadataList[i]['attributes']
-              if (attributes !== undefined) console.log(attributes[3]['value'])
+              if (attributes !== undefined) DNA = attributes[0]['value']?.replace(/\s/g,'') ?? ''
           }
-          */
           nft = {name: name, image: image,  description: description, DNA:DNA, mint:mint}
           nftList.push(nft);
         }
@@ -63,7 +58,7 @@ const Gallery:React.FC = () => {
 
   
   return (
-    <div className="grid grid-cols-4 gap-1 container mx-auto mt-10">
+    <div className="grid grid-cols-4 gap-1  place-items-center container mx-auto mt-10">
         {NFTs.map(nft => (
            <NFTcard key={key++}image={nft.image} title={nft.name} description={nft.description}/>
         ))}

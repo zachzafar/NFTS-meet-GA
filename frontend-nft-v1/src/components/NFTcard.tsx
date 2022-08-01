@@ -5,17 +5,20 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
 
+//import useAppContext from './context/appContext'
+
 interface Props {
     image: string;
     title: string;
     description: string;
-
 }
 
 
 const NFTcard : React.FC<Props> = ({image,title,description}) => {
+ // const { updateModalStatusAndModalNft } = useAppContext();
+
   return (
-    <Card sx={{ maxWidth: 250 }}>
+    <Card sx={{ maxWidth: 250 ,width: 250 }}>
       <CardActionArea>
         <CardMedia
           component="img"

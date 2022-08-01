@@ -1,6 +1,7 @@
 import React, {createContext,useReducer, useContext} from 'react';
 import appReducer,{ initialState} from './appReducer';
 import {ActionKind,NFT} from '../types/types'
+import { Nft } from '@metaplex-foundation/js';
 export const AppContext = createContext(initialState);
 
 type ContextProviderProps = {
@@ -17,11 +18,18 @@ export  const AppProvider = ({children}:ContextProviderProps) => {
         dispatch({type:ActionKind.UPDATE_USER_STATUS, payload: {userStatus: userStatus}});
     }
 
+    const updateModalStatusAndModalNft = (modalStatus:boolean,modalNft:Nft) => {
+        dispatch({type:ActionKind.UPDATE_MODAL_STATUS_AND_MODAL_NFT, payload: {modalStatus: modalStatus,modalNft: modalNft}});
+    }
+
     const value = {
         userStatus: state.userStatus,
+        modalStatus: state.modalStatus,
+        modalNft: state.modalNft,
         NFTs: state.NFTs,
         saveNFTs,
-        updateUserStatus
+        updateUserStatus,
+        updateModalStatusAndModalNft
     }
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>
 }
