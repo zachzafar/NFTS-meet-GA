@@ -4,12 +4,13 @@ import os
 import json
 
 # Metadata Base. MUST BE EDITED.
-BASE_IMAGE_URL = "ipfs://<-- Your CID Code-->"  # Require edit
 BASE_NAME = "DudeOnChain"                       # Require edit
 BASE_JSON = {
     "name": BASE_NAME,
+    "symbol": "DOC",                            # Require edit
     "description": "DudeOnChain",               # Require edit
-    "image": BASE_IMAGE_URL,
+    "seller_fee_basis_points": 250,             # Require edit
+    "image": str,
     "attributes": list(),
     "properties": dict()
 }
@@ -17,8 +18,8 @@ BASE_JSON = {
 # change or add if more share parties
 CREATORS_AND_SHARE = [
     {
-        "address": "",
-        "share": 0
+        "address": "45Mi4bjAxeXMJhrNfNmGPzCoHtosk1oDvo5yimtFKFbZ",
+        "share": 100
     }
 ]  
 
@@ -44,7 +45,7 @@ IMAGE_PATH = r"./artwork"
 ARKWORK_OUTPUT_PATH = r"./output"
 CONFIG_PATH = r"./config"
 METADATA_PATH = os.path.join(ARKWORK_OUTPUT_PATH, "./_metadata.json")
-NO_OF_ARTWORK = 5
+NO_OF_ARTWORK = 10
 
 SAVE_ARTWORK = True
 SHOW_ARTWORK = False
