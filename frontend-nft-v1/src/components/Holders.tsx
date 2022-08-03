@@ -15,7 +15,7 @@ const  Holders:React.FC = () => {
 
   useEffect(() => {
     
-    const collectionAddress:PublicKey = new PublicKey(`${process.env.REACT_APP_CANDY_MACHINE_MINT_ADDRESS}`)
+    const collectionAddress:PublicKey = new PublicKey(`${process.env.CANDY_MACHINE_MINT_ADDRESS}`)
     if(publicKey === null) {return;}
     const metaplex = new Metaplex(connection);
     let pubKey;
