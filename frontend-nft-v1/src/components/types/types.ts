@@ -25,5 +25,5 @@ export interface State {
     NFTs: NFT[],
     saveNFTs: (NFTs: NFT[]) => void,
     updateUserStatus: (userStatus: boolean) => void,
-    updateModalStatusAndModalNft: (modalStatus: boolean, NFT: NFT | undefined) => void,
+    updateModalStatusAndModalNft: (modalStatus: boolean, NFT: NFT | undefined | null) => void,
 }

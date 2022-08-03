@@ -18,23 +18,24 @@ const NFTModal:React.FC<Props> = ({NFT}) => {
       parentAddress2 = NFT.parentMintAddresses[1] ?? ''
     }
   return (
-    <div className='absolute w-6/12 bg-gray-700 p-24 rounded-lg shawdow-lg  z-10'>
+    <div className='absolute w-5/12 bg-gray-900 p-14 rounded-lg shawdow-lg  top-1/4 left-1/4 '>
       <CloseIcon fontSize='large' onClick={() => updateModalStatusAndModalNft(false,undefined)}/>
       <Card>
         <CardMedia
         component='img'
-        height='300'
+        height='200'
+        width='200'
         image={NFT.image}
         alt='dude'
         >
         </CardMedia>
       </Card>
-      <Typography>{NFT.name}</Typography>
-      <Typography>{NFT.description}</Typography>
-      <Typography>{NFT.mint}</Typography>
-      <Typography>{parentAddress1}</Typography>
-      <Typography>{parentAddress2}</Typography>
-      <Button component={Link} to='/familyTree' variant='contained'>Explore Tree</Button>
+      <Typography>Name: {NFT.name}</Typography>
+      <Typography>Description: {NFT.description}</Typography>
+      <Typography>Mint Address: {NFT.mint}</Typography>
+      <Typography>Parent 1 Address: {parentAddress1}</Typography>
+      <Typography>Parent 2 Address:{parentAddress2}</Typography>
+      <Button component={Link} to='/familyTree' variant='contained' onClick={() => updateModalStatusAndModalNft(false,null)}>Explore Tree</Button>
     </div>
   )
 }

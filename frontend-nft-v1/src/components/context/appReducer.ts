@@ -7,7 +7,7 @@ export const initialState: State = {
     NFTs: [],
     saveNFTs: (NFTs: NFT[]) => { },
     updateUserStatus: (userStatus: boolean) => { },
-    updateModalStatusAndModalNft: (modalStatus: boolean, NFT: NFT | undefined) => { },
+    updateModalStatusAndModalNft: (modalStatus: boolean, NFT: NFT | undefined | null) => { },
 }
 
 

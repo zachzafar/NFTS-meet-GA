@@ -17,8 +17,9 @@ export  const AppProvider = ({children}:ContextProviderProps) => {
         dispatch({type:ActionKind.UPDATE_USER_STATUS, payload: {userStatus: userStatus}});
     }
 
-    const updateModalStatusAndModalNft = (modalStatus:boolean,modalNft:NFT | undefined) => {
-        if(modalNft === undefined) modalNft = state.modalNft
+    const updateModalStatusAndModalNft = (modalStatus:boolean,modalNft:NFT | undefined | null) => {
+        if(modalNft === undefined) modalNft = undefined;
+        if(modalNft === null) modalNft = state.modalNft
         dispatch({type:ActionKind.UPDATE_MODAL_STATUS_AND_MODAL_NFT, payload: {modalStatus: modalStatus,modalNft: modalNft}});
     }
 

@@ -82,10 +82,10 @@ const  FamilyTree:React.FC<Props> = ({NFT}) => {
 },[NFT, connection])
   
   return (
-    <div className='h-full w-full place-items-center flex flex-col'>
+    <div  className='h-full w-full place-items-center flex flex-col'>
       {NFT !== undefined ? <NFTcard NFT={NFT}/> : null}
       <div className='flex flex-row'>
-      {parentNFTs ? parentNFTs.map(nft => (
+      {parentNFTs !== undefined ? parentNFTs.map(nft => (
         <FamilyTree key={key++} NFT={nft}/>
       )): null}
       </div>
