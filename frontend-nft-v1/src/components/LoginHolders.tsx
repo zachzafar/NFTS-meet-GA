@@ -1,14 +1,15 @@
 import React from 'react'
 import {WalletMultiButton} from '@solana/wallet-adapter-react-ui';
+import {Typography} from '@mui/material'
 
 
 const LoginHolders:React.FC = () => {
     
   return (
-        <div className='bg-gray-100 h-screen w-auto grid place-items-center'>
-      <div className='p-24 text-center bg-white shawdow-lg rounded-lg'>
+        <div className='bg-gray-900 h-full w-full grid place-items-center'>
+      <div className='p-14 text-center bg-gray-800 shawdow-lg rounded-lg flex flex-col place-items-center'>
         <div>
-          <h1>Sign in to Holders Area</h1>
+          <Typography variant='h5'>Sign in to Holders Area</Typography>
         </div>
         <WalletMultiButton/>
       </div>

@@ -71,6 +71,18 @@ const Navbar:React.FC = () => {
         </Stack>
         );  
       break;
+      case '/familyTree':
+      stack = (
+        <Stack direction='row' spacing={2}>
+          <Button component={Link} to='/' color='inherit'>
+            Home
+          </Button>
+          <Button component={Link} to='/holders' color='inherit'>
+            Holders
+          </Button>
+        </Stack>
+      ); 
+      break;
     default:
       stack = null;
   }

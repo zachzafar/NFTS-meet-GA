@@ -26,7 +26,7 @@ const ContentLibrary: React.FC<Props> = ({contentType,setParentNFT,mutate,parent
   }
   
   return(
-    <div className='w-64 bg-sky-800 h-full overflow-y-scroll flex flex-col'>
+    <div className=' bg-gray-900 h-full overflow-y-scroll fixed flex flex-col'>
       {dudes.map(d => (
         <div key={key++} className='p-5'>
         <Card  sx={{ width: 150}}  onClick={() => click(d)}>

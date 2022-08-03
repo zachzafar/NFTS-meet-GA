@@ -28,14 +28,14 @@ const  Holders:React.FC = () => {
         return;
       }
       }
-      alert('Sorry but you need to have a dude to access the net page');
+      console.log('sorry you need a dude to enter this are')
     }
     authenticateNFT();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[publicKey,connection,userStatus])
+  },[publicKey])
   
   return (
-    <div>
+    <div className="h-full w-full">
      {userStatus ? <Gallery/>: <LoginHolders/>} 
     </div>
   );

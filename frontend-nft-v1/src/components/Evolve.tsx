@@ -6,7 +6,7 @@ import ContentLibrary from './ContentLibrary';
 import * as attributes from '../assets/utils/utils'
 import {NFT} from './types/types'
 import mergeImages from 'merge-images';
-import {bundlrStorage, Metaplex, useMetaplexFileFromBrowser, walletAdapterIdentity} from '@metaplex-foundation/js'
+import {bundlrStorage, Metaplex, Nft, useMetaplexFileFromBrowser, walletAdapterIdentity} from '@metaplex-foundation/js'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 //import { PublicKey } from '@solana/web3.js'
 //import {Collection} from '@metaplex-foundation/mpl-token-metadata'
@@ -25,15 +25,15 @@ const Evolve:React.FC = () => {
   let recipe:{[key:string]:any} = [attributes.headdecoration,attributes.layer_0,attributes.layer_1,attributes.layer_2,attributes.layer_3,attributes.layer_4,attributes.layer_5,attributes.layer_6,attributes.layer_7,attributes.layer_8,attributes.layer_9,attributes.layer_10,attributes.layer_11,attributes.layer_12,attributes.layer_13]
   let cards:ReactJSXElement;
   let sidebarOptions:string[] = ['dudes','head decorations','layer 0','layer 1','layer 2','layer 3','layer 4','layer 5','layer 6','layer 7','layer 8','layer 9','layer 10','layer 11','layer 12','layer 13']
-  /*
-  const contentTypeMutator = (newContentType: string) => {
-    if(contentType === newContentType){
-      setContentType('')
+  
+  const confirmNFt = (NFT:Nft) => {
+    if(NFT.editionTask.getStatus() === 'successful'){ 
+      alert('dude has been succesfully minted')
     } else {
-      setContentType(newContentType)
+      alert('Hmm something went wrong with that mint')
     }
   }
-  */
+  
   const setParentNFT = (NFT:NFT) => {
       if(parent1NFT === undefined){
         setparent1NFT(NFT);
@@ -56,7 +56,6 @@ const Evolve:React.FC = () => {
   }
 
 
-
 const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateAction<NFT | undefined>>) =>  {
   let ingredients = []
   let ingredientType;
@@ -65,13 +64,14 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
   let childDNA:string = ''
   let realIndex;
   
-  
   for( let i = 0; i < DNA.length; i++){
+    if(DNA[i] === 'NaN') DNA[i] = '-1'
     if(i === 0){
-      childDNA = childDNA + DNA[i] + ','
+      childDNA = childDNA + DNA[i]
     } else {
-      childDNA = childDNA  + ',' + DNA[i] + ','
+      childDNA = childDNA  + ',' + DNA[i]
     }
+
     if(DNA[i] === '-1') { continue }
     realIndex = String(parseInt(DNA[i]) - 1)
     ingredientType = recipe[i]
@@ -101,11 +101,11 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
     for(let i=0; i < Math.round(parent1DNA.length/2); i++) {
         child1DNA.push(parent1DNA[i])
     }
-    for(let i=8; i < parent1DNA.length; i++) {
-        child2DNA.push(parent1DNA[i])
-    }
     for(let i=0; i < Math.round( parent2DNA.length/2); i++) {
         child2DNA.push(parent2DNA[i])
+    }
+    for(let i=8; i < parent1DNA.length; i++) {
+        child2DNA.push(parent1DNA[i])
     }
     for(let i=8; i < parent2DNA.length; i++) {
         child1DNA.push(parent2DNA[i])
@@ -153,9 +153,9 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
     timeout: 60000,
 }));
     const { uri } = await metaplex.nfts().uploadMetadata({
-      "name": "new Number #0001",
+      "name": "DudeOnChain",
     "symbol": "NB",
-  "description": "Collection of 10 numbers on the blockchain. This is the number 1/10.",
+  "description": "DudeOnChain",
   "seller_fee_basis_points": 500,
   // eslint-disable-next-line react-hooks/rules-of-hooks
   "image": await useMetaplexFileFromBrowser(file),
@@ -176,12 +176,11 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
   "collection": { "name": "numbers", "family": "numbers" }
     })
 
-    
     const { nft } = await metaplex.nfts().create({
       uri: uri,
     //  collection: collection
     })
-    console.log(nft)
+    confirmNFt(nft);
   }
 
   const burn = async (NFT:NFT) => {
@@ -223,8 +222,8 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
   switch (type) {
     case 'mutate':
     if(parent1NFT && child1NFT === undefined ){mutate(parent1NFT)}
-    cards = (<div className="w-full h-full grid place-items-center mt-1">
-        <Card sx={{ maxWidth: 250 ,width: 250 ,  }}>
+    cards = (<div className=" pl-60 w-full h-full grid place-items-center mt-1">
+        <Card  className='bg-white' sx={{ maxWidth: 250 ,width: 250  }}>
           {parent1NFT ? <CardMedia 
           component="img"
           height="250"
@@ -235,7 +234,8 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
           '& > :not(style)': {
             width: 250,
             height: 250,
-            padding: 5 
+            padding: 5,
+            backgroundColor: 'white' 
           },
         }}
       >
@@ -254,7 +254,8 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
           '& > :not(style)': {
             width: 250,
             height: 250,
-            padding: 5 
+            padding: 5,
+            backgroundColor: 'white' 
           },
         }}
       >
@@ -266,9 +267,10 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
     break;
     case 'crossover':
        if(parent1NFT && parent2NFT && child1NFT === undefined){crossover(parent1NFT,parent2NFT);}
-    cards = ((<div className="w-full h-full grid place-items-center">
-        <div className="flex flex-row">
-          <Card sx={{ maxWidth: 250, width:250,   }}>
+    cards = (
+    <div className="flex flex-col place-items-center ">
+    <div className="pl-60 w-full h-full grid grid-cols-2 gap-10 place-items-center">
+          <Card sx={{ maxWidth: 250, width:250}}>
           {parent1NFT ? <CardMedia 
           component="img"
           height="250"
@@ -279,7 +281,7 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
           '& > :not(style)': {
             width: 250,
             height: 250,
-            padding: 5 
+            backgroundColor: 'white'  
           },
         }}
       >
@@ -298,15 +300,13 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
           '& > :not(style)': {
             width: 250,
             height: 250,
-            padding: 5 
+            backgroundColor: 'white'  
           },
         }}
       >
         <Paper variant='outlined' elevation={0} />
       </Box>}
         </Card>
-      </div>
-      <div className='flex flex-row'>
         <Card sx={{ maxWidth: 250, width: 250,  }}>
           {child1NFT ? 
           <div>
@@ -322,7 +322,8 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
           '& > :not(style)': {
             width: 250,
             height: 250,
-            padding: 5 
+            backgroundColor: 'white' 
+
           },
         }}
       >
@@ -341,16 +342,17 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
           '& > :not(style)': {
             width: 250,
             height: 250,
-            padding: 5 
+
+            backgroundColor: 'white' 
           },
         }}
       >
         <Paper variant='outlined' elevation={0} />  
       </Box>}
         </Card>
-      </div>
-      {child1NFT ? <Button variant='outlined' onClick={() => {mintAndBurn()}}>Mint</Button> : null}
-        </div>) )  
+        </div>
+      {child1NFT ? <Button variant='outlined'  className='ml-60 mt-10' onClick={() => {mintAndBurn()}}>Mint</Button> : null}
+      </div>) 
     break;
     default:
       cards = (<div>Hmm something wrong here</div>)
@@ -367,7 +369,9 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
   return (
   <div className='flex flex-row h-full w-full'>
     <ContentLibrary mutate={mutate} setParentNFT={setParentNFT} contentType={contentType} parentNFT={parent1NFT}/>
-    {cards}
+    <div className='w-full h-full bg-gray-100 grid place-items-center'>
+      {cards}
+    </div>
   </div>
   );
 }

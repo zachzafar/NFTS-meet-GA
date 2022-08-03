@@ -4,38 +4,39 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { CardActionArea } from '@mui/material';
+import {NFT} from './types/types'
+import useAppContext from './context/appContext';
 
-//import useAppContext from './context/appContext'
 
 interface Props {
-    image: string;
-    title: string;
-    description: string;
+    NFT:NFT
 }
 
 
-const NFTcard : React.FC<Props> = ({image,title,description}) => {
- // const { updateModalStatusAndModalNft } = useAppContext();
+const NFTcard : React.FC<Props> = ({NFT}) => {
+  const { updateModalStatusAndModalNft } = useAppContext();
 
   return (
-    <Card sx={{ maxWidth: 250 ,width: 250 }}>
+    <div className="py-3">
+    <Card sx={{ maxWidth: 250 ,width: 250}} onClick={() => updateModalStatusAndModalNft(true,NFT)}>
       <CardActionArea>
         <CardMedia
           component="img"
           height="300"
-          image={image}
+          image={NFT.image}
           alt="dude"
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {title}
+            {NFT.name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {description}
+            {NFT.description}
           </Typography>
         </CardContent>
       </CardActionArea>
     </Card>
+    </div>
   );
 }
 

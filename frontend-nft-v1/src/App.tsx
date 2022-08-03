@@ -11,17 +11,22 @@ import {
 import {WalletModalProvider} from '@solana/wallet-adapter-react-ui';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { clusterApiUrl } from '@solana/web3.js';
-import {AppProvider} from './components/context/appContext';
+import useAppContext from './components/context/appContext';
 import Navbar from './components/Navbar';
 import Main from './components/Main';
 import Mint from './components/Mint';
 import Holders from './components/Holders';
 import Evolve from './components/Evolve';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {ThemeProvider,createTheme} from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import NFTModal from './components/NFTModal';
+import FamilyTree from './components/FamilyTree';
 require('@solana/wallet-adapter-react-ui/styles.css');
 
 
 const App: React.FC = () => {
+  const {modalStatus,modalNft} = useAppContext();
   const network = WalletAdapterNetwork.Devnet;
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   const wallets = useMemo(
@@ -35,12 +40,20 @@ const App: React.FC = () => {
         ],
         [network]
     );
+
+  const darkTheme = createTheme({
+    palette:{
+      mode: 'dark',
+    },
+  });
+
   
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets}>
         <WalletModalProvider>
-          <AppProvider>
+            <ThemeProvider theme={darkTheme}>
+              <CssBaseline/>
             <div className='flex flex-col h-screen'>
               <Router>
               <Navbar />
@@ -50,11 +63,14 @@ const App: React.FC = () => {
                 <Route path='mint' element={<Mint />} />
                 <Route path='holders' element={<Holders />} />
                 <Route path='evolve/:type' element={<Evolve />} />
+                <Route path='familyTree' element={<FamilyTree NFT={modalNft} />} />
               </Routes>
             </div>
+             {modalStatus && modalNft ? <NFTModal NFT={modalNft}/> : null}
               </Router>
+             
             </div> 
-          </AppProvider>
+            </ThemeProvider>
     </WalletModalProvider>
     </WalletProvider>
     </ConnectionProvider>

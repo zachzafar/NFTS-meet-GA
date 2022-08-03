@@ -1,7 +1,6 @@
 import React, {createContext,useReducer, useContext} from 'react';
 import appReducer,{ initialState} from './appReducer';
 import {ActionKind,NFT} from '../types/types'
-import { Nft } from '@metaplex-foundation/js';
 export const AppContext = createContext(initialState);
 
 type ContextProviderProps = {
@@ -18,7 +17,8 @@ export  const AppProvider = ({children}:ContextProviderProps) => {
         dispatch({type:ActionKind.UPDATE_USER_STATUS, payload: {userStatus: userStatus}});
     }
 
-    const updateModalStatusAndModalNft = (modalStatus:boolean,modalNft:Nft) => {
+    const updateModalStatusAndModalNft = (modalStatus:boolean,modalNft:NFT | undefined) => {
+        if(modalNft === undefined) modalNft = state.modalNft
         dispatch({type:ActionKind.UPDATE_MODAL_STATUS_AND_MODAL_NFT, payload: {modalStatus: modalStatus,modalNft: modalNft}});
     }
 

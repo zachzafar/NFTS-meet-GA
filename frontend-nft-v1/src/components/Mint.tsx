@@ -13,7 +13,7 @@ const Mint:React.FC = () => {
           },
         }}
       >
-        <Paper variant='outlined' elevation={3} />
+        <Paper variant='outlined' elevation={0} />
       </Box>
       <Button variant='outlined'>Mint</Button>
     </div>

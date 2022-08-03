@@ -1,10 +1,10 @@
 import React, {useState,useEffect} from 'react'
 import NFTcard from './NFTcard';
 import {useConnection} from '@solana/wallet-adapter-react';
-import {Metaplex} from '@metaplex-foundation/js';
+import {JsonMetadataAttribute, Metaplex} from '@metaplex-foundation/js';
 import {PublicKey} from '@solana/web3.js';
 import {NFT} from './types/types';
-import { Card, CardMedia, Typography } from '@mui/material';
+import { Button, Typography, CircularProgress, Box } from '@mui/material';
 
 
 const Main:React.FC = () => {
@@ -22,6 +22,10 @@ const Main:React.FC = () => {
       let description:string;
       let image:string;
       let mint:string;
+      let DNA:string;
+      let parent1MintAddress:string;
+      let parent2MintAddress:string;
+      let parentAttribute:JsonMetadataAttribute
       const nfts = await metaplex.nfts().findAllByCandyMachine(candyMachine,2);
       const nftsmetadata = nfts.map(nft => nft.metadataTask.run());
       Promise.all(nftsmetadata).then(metadataList =>{
@@ -30,7 +34,22 @@ const Main:React.FC = () => {
           image = metadataList[i]['image'] ?? '';
           description = metadataList[i]['description'] ?? '';
           mint = nfts[i]['mint'].toString() ?? ''
-          nft = {name: name, image: image,  description: description, DNA:'', mint: mint,}
+          if(metadataList[i]['attributes'] !== undefined){
+              let attributes = metadataList[i]['attributes']
+              if (attributes !== undefined) {
+                DNA = attributes[0]['value']?.replace(/\s/g,'') ?? ''
+                parentAttribute = attributes[1] ?? ''
+                if(parentAttribute !== undefined){
+                  parent1MintAddress = parentAttribute['value'] ?? ''
+                }
+                parentAttribute = attributes[2] ?? ''
+                if(parentAttribute !== undefined){
+                  parent2MintAddress = parentAttribute['value'] ?? ''
+                }
+              }
+          }
+          
+          nft = {name: name, image: image,  description: description, DNA:DNA, mint: mint,parentMintAddresses: [parent1MintAddress, parent2MintAddress]}
           nftList.push(nft);
         }
         setNFTS(nftList);
@@ -40,34 +59,30 @@ const Main:React.FC = () => {
     },[connection])
 
   return (
-    <div>
-      <div className='flex flex-row'>
-      <div >
-        <Typography>
+    <div className=' flex flex-col justify-center items-center'>
+      <div className='flex flex-col justify-center items-center p-36'>
+        <Typography variant='h2' className='py-7'>
           Dudesonchain NFT Collection 
         </Typography>
-        <Typography>
+        <Typography variant='h6'>
           A collection of 10,000 unique dudes (non-fungible tokens) with proof of ownership stored 
           on the Solana blockchain. Each dude is automatically generated and programatically guaranteed 
           to be one of a kind, officially owned by a single person and minted using the Metaplex contract 
           (a Solana NFT standard).
         </Typography>
+        <Button className='mt-10' variant='contained' size='large'>Mint Now</Button>
       </div>
-      <Card>
-        <CardMedia 
-          component="img"
-          height="400"
-          width='300'
-          image=''
-          alt="dude">
-        </CardMedia>
-      </Card>
-      </div>
-      <div className="grid grid-cols-4 gap-1 container mx-auto mt-10">
+      <Typography variant='h3' >Minted Dudes</Typography>
+        {NFTS.length===0? 
+         <Box className='pt-5'>
+        <CircularProgress/>
+        </Box>
+        :  <div className="grid grid-cols-4 gap-1 place-items-center container mx-auto mt-10">
         {NFTS.map(nft => (
-           <NFTcard key={key++}image={nft.image} title={nft.name} description={nft.description}/>
+           <NFTcard key={key++} NFT={nft}/>
         ))}
-        </div>
+        </div>}
+        
       </div>
   )
 }

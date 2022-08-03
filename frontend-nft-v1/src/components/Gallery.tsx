@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import NFTcard from './NFTcard';
 import {useConnection, useWallet} from '@solana/wallet-adapter-react';
-import {Metaplex} from '@metaplex-foundation/js';
+import {JsonMetadataAttribute, Metaplex} from '@metaplex-foundation/js';
 import {PublicKey} from '@solana/web3.js';
 import useAppContext from './context/appContext';
 import {NFT} from './types/types'
@@ -26,11 +26,16 @@ const Gallery:React.FC = () => {
       let image:string;
       let mint:string;
       let DNA:string;
+      let parent1MintAddress:string;
+      let parent2MintAddress:string;
       let nftCollectionAddress;
+      let nftName;
+      let parentAttribute:JsonMetadataAttribute
       let nfts = await metaplex.nfts().findAllByOwner(publicKey)
       nfts = nfts.filter((nft)=> {
         nftCollectionAddress = nft['collection'] ?? null;
-        return (nftCollectionAddress !== null && collectionAddress.equals(nftCollectionAddress['key'])) 
+        nftName = nft['name'] ?? ''
+        return ((nftCollectionAddress !== null && collectionAddress.equals(nftCollectionAddress['key'])) || nftName === 'DudeOnChain' )
 
       });
       const nftsmetadata = nfts.map(nft => nft.metadataTask.run())
@@ -42,9 +47,19 @@ const Gallery:React.FC = () => {
           mint = nfts[i]['mint'].toString() ?? ''
           if(metadataList[i]['attributes'] !== undefined){
               let attributes = metadataList[i]['attributes']
-              if (attributes !== undefined) DNA = attributes[0]['value']?.replace(/\s/g,'') ?? ''
+              if (attributes !== undefined) {
+                DNA = attributes[0]['value']?.replace(/\s/g,'') ?? ''
+                parentAttribute = attributes[1] ?? ''
+                if(parentAttribute !== undefined){
+                  parent1MintAddress = parentAttribute['value'] ?? ''
+                }
+                parentAttribute = attributes[2] ?? ''
+                if(parentAttribute !== undefined){
+                  parent2MintAddress = parentAttribute['value'] ?? ''
+                }
+              }
           }
-          nft = {name: name, image: image,  description: description, DNA:DNA, mint:mint}
+          nft = {name: name, image: image,  description: description, DNA:DNA, mint:mint,parentMintAddresses:[parent1MintAddress,parent2MintAddress]}
           nftList.push(nft);
         }
         saveNFTs(nftList);
@@ -60,7 +75,7 @@ const Gallery:React.FC = () => {
   return (
     <div className="grid grid-cols-4 gap-1  place-items-center container mx-auto mt-10">
         {NFTs.map(nft => (
-           <NFTcard key={key++}image={nft.image} title={nft.name} description={nft.description}/>
+           <NFTcard key={key++} NFT={nft}/>
         ))}
       </div>
   )

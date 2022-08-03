@@ -1,5 +1,3 @@
-import { Nft } from "@metaplex-foundation/js";
-
 export enum ActionKind {
     SAVE_NFTS = 'SAVE_NFTS',
     UPDATE_USER_STATUS = 'UPDATE_USER_STATUS',
@@ -23,9 +21,9 @@ export interface Action {
 export interface State {
     userStatus: boolean,
     modalStatus: boolean,
-    modalNft: Nft | undefined,
+    modalNft: NFT | undefined,
     NFTs: NFT[],
     saveNFTs: (NFTs: NFT[]) => void,
     updateUserStatus: (userStatus: boolean) => void,
-    updateModalStatusAndModalNft: (modalStatus: boolean, NFT: Nft) => void
+    updateModalStatusAndModalNft: (modalStatus: boolean, NFT: NFT | undefined) => void,
 }
