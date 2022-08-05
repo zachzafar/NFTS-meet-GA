@@ -6,16 +6,22 @@ import {PublicKey} from '@solana/web3.js';
 import {NFT} from './types/types';
 import { Button, Typography, CircularProgress, Box } from '@mui/material';
 
-
+/**
+ * Displays landing page as well as Dudes that have already been minted
+ * @returns {ReactJSXElement}
+ */
 const Main:React.FC = () => {
-    const [NFTS, setNFTS] = useState<NFT[]>([]);
-    const { connection } = useConnection();
-    let key= 0;
+  const [NFTS, setNFTS] = useState<NFT[]>([]);
+  const { connection } = useConnection();
+  let key= 0;
 
-    useEffect( () => {
-      const candyMachine = new PublicKey(`${process.env.CANDY_MACHINE_ID}`);
+  /**
+   * Loads Nfts that have already been minted from the candyMachine and updates the component state with a list of NFT objects
+   * @returns {void} updates the NFTS state of the Main component 
+   */
+  const loadCandyMachineMints =  async () => {
+      const candyMachine = new PublicKey(`${process.env.REACT_APP_CANDY_MACHINE_ID}`);
       const metaplex = new Metaplex(connection);
-      const loadCandyMachineMints =  async () => {
       let nft:NFT;
       let nftList:NFT[] = [];
       let name:string;
@@ -55,7 +61,11 @@ const Main:React.FC = () => {
         setNFTS(nftList);
       }).catch(err => console.log(err));
     }
+  
+    
+  useEffect( () => {
     loadCandyMachineMints();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[connection])
 
   return (

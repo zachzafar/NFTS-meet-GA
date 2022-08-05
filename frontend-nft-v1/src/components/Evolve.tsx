@@ -8,9 +8,13 @@ import {NFT} from './types/types'
 import mergeImages from 'merge-images';
 import {bundlrStorage, Metaplex, Nft, useMetaplexFileFromBrowser, walletAdapterIdentity} from '@metaplex-foundation/js'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-//import { PublicKey } from '@solana/web3.js'
-//import {Collection} from '@metaplex-foundation/mpl-token-metadata'
+//import { PublicKey, Transaction } from '@solana/web3.js';
+//import { createTransferCheckedInstruction,getOrCreateAssociatedTokenAccount } from '@solana/spl-token';
 
+/**
+ * Component used for the creation and minting of new NFTs from user's currently owned Dudes
+ * @returns {ReactJSXElement}
+ */
 const Evolve:React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [contentType, setContentType] = useState('');
@@ -21,19 +25,27 @@ const Evolve:React.FC = () => {
   const {connection} = useConnection();
   const  wallet = useWallet();
   const {type}= useParams();
-  //const collection:Collection = {verified: true, key: new PublicKey(`${process.env.REACT_APP_CANDY_MACHINE_MINT_ADDRESS}`) }
   let recipe:{[key:string]:any} = [attributes.headdecoration,attributes.layer_0,attributes.layer_1,attributes.layer_2,attributes.layer_3,attributes.layer_4,attributes.layer_5,attributes.layer_6,attributes.layer_7,attributes.layer_8,attributes.layer_9,attributes.layer_10,attributes.layer_11,attributes.layer_12,attributes.layer_13]
   let cards:ReactJSXElement;
   let sidebarOptions:string[] = ['dudes','head decorations','layer 0','layer 1','layer 2','layer 3','layer 4','layer 5','layer 6','layer 7','layer 8','layer 9','layer 10','layer 11','layer 12','layer 13']
   
-  const confirmNFt = (NFT:Nft) => {
-    if(NFT.editionTask.getStatus() === 'successful'){ 
+  /**
+   * Confirm Nft successfully minted
+   * @param {Nft} newNFT Newly created Nft
+   */
+  const confirmNFt = (newNFT:Nft) => {
+    if(newNFT.editionTask.getStatus() === 'successful'){ 
       alert('dude has been succesfully minted')
     } else {
       alert('Hmm something went wrong with that mint')
     }
   }
   
+  /**
+   * Updates the state of the component with new NFT object
+   * @param {NFT} NFT NFT object to be update component state with 
+   * @returns 
+   */
   const setParentNFT = (NFT:NFT) => {
       if(parent1NFT === undefined){
         setparent1NFT(NFT);
@@ -55,8 +67,13 @@ const Evolve:React.FC = () => {
       }
   }
 
-
-const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateAction<NFT | undefined>>) =>  {
+  /**
+   * Generates new NFT object and updates the state of the Component childNFT state with NFT
+   * @param {string[]} parents Array of mint addresses representing the parent Nfts of the newly created NFT 
+   * @param {string[]} DNA Array of numbers representing the features of the NFT used in generation of the NFT image 
+   * @param {Dispatch<SetStateAction<NFT | undefined>>} setNft Function used to update the state of the component with a new NFT object
+   */
+  const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateAction<NFT | undefined>>) =>  {
   let ingredients = []
   let ingredientType;
   let ingredientNumber;
@@ -86,8 +103,14 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
       setNft(childNFT);
       
   })
-}
+  }
 
+  /**
+   * Create new DNA sequences from two parent NFT DNA
+   * @param {NFT} parent1NFT NFT object used for crossover
+   * @param {NFT} parent2NFT NFT object used for crossover
+   * @returns 
+   */
   const crossover = (parent1NFT:NFT, parent2NFT:NFT) => {
     if(parent1NFT.DNA === undefined || parent2NFT.DNA === undefined) {
       console.log("crossover function was called but DNA in parents not present")
@@ -114,6 +137,13 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
     generateDudeNFT([parent1NFT.mint,parent2NFT.mint],child2DNA,setchild2NFT)
   }
 
+  /**
+   * Generate new NFT object by changing one feature of parent NFT DNA sequence
+   * @param {NFT} parentNFT NFT object used for mutation
+   * @param {string} attributeType 
+   * @param {string} attributeIndex 
+   * @returns 
+   */
   const mutate = (parentNFT:NFT,attributeType?:string,attributeIndex?:string) => {
     if(parentNFT.DNA === undefined) {
       console.log('mutate function was called but parent dna not present')
@@ -130,6 +160,11 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
     generateDudeNFT([parentNFT.mint],childDNA,setchild1NFT);
   }
 
+  /**
+   * Used to Mint new dude Nft
+   * @param {NFT} NFT NFT object containing data used to create metadata url on arewave which is then used to create a new Nft
+   * @returns {Nft} new dude Nft
+   */
   const mint =  async (NFT:NFT) => {
     if (wallet === null) {return};
     console.log('minting....')
@@ -178,34 +213,28 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
 
     const { nft } = await metaplex.nfts().create({
       uri: uri,
-    //  collection: collection
     })
     confirmNFt(nft);
   }
 
+  /**
+   * Sends Nft back to a wllet which the user has no access to in our case this wallet is the candy machine address
+   * @param NFT 
+   * @returns 
+   */
   const burn = async (NFT:NFT) => {
-    /*
-    let tokenAccount
-    const mintPubKey = new PublicKey(NFT.mint)
-    const ownerAccount = wallet.publicKey
-    const burnAddress = new PublicKey('inknkdnimiodmomoceimvnidls')
-    if(ownerAccount !== null){
-       tokenAccount = await connection.getTokenAccountsByOwner(ownerAccount,{ mint: mintPubKey})
-    }
-    
-    
-    let tx = new Transaction().add(createBurnCheckedInstruction(tokenAccount,mintPubKey,ownerAccount,1e8,8))
-    
-    const signature = await wallet.sendTransaction(tx, connection);
-*/
 
     return
   }
 
+  /**
+   * 
+   * @returns 
+   */
   const mintAndBurn = () => {
     if(!child1NFT && !child2NFT){return}
     console.log('minting and burning')
-    if(child1NFT && parent1NFT){
+    if(child1NFT && !child2NFT && parent1NFT && !parent2NFT){
       console.log('minting new mutation');
       mint(child1NFT)
       burn(parent1NFT)
@@ -216,8 +245,8 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
       burn(parent1NFT)
       burn(parent2NFT)
     }
-
   }
+
 
   switch (type) {
     case 'mutate':
@@ -368,7 +397,7 @@ const generateDudeNFT = (parents:string[],DNA:string[],setNft:Dispatch<SetStateA
 
   return (
   <div className='flex flex-row h-full w-full'>
-    <ContentLibrary mutate={mutate} setParentNFT={setParentNFT} contentType={contentType} parentNFT={parent1NFT}/>
+    <ContentLibrary mutate={mutate} setParentNFT={setParentNFT} parentNFT={parent1NFT}/>
     <div className='w-full h-full bg-gray-100 grid place-items-center'>
       {cards}
     </div>

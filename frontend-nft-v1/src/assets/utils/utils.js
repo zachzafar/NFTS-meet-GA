@@ -1,3 +1,8 @@
+/**
+ * Imports images from a folder as a map object
+ * @param {*} r Represents the imported holder
+ * @returns
+ */
 function importAll(r) {
   let images = {};
   let key = 0;

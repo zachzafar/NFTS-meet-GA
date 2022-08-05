@@ -6,19 +6,25 @@ import {PublicKey} from '@solana/web3.js';
 import useAppContext from './context/appContext';
 import {NFT} from './types/types'
 
+
+/**
+ * Displays all of the Dude NFTs owned by the user
+ * @returns {ReactJSXElement} 
+ */
 const Gallery:React.FC = () => {
     const { connection } = useConnection();
     const { publicKey } = useWallet();
     const { saveNFTs,NFTs } = useAppContext();
     let key= 0;
 
-    
-
-    useEffect( () => {
+    /**
+     * Loads all NFTs owned by user that are from the Nft collection
+     * @returns {void} updates the the AppContext State with the Nfts
+     */
+    const loadUserNFTs =  async () => {
       if(publicKey === null) {return;}
       const collectionAddress:PublicKey = new PublicKey(`${process.env.CANDY_MACHINE_MINT_ADDRESS}`)
       const metaplex = new Metaplex(connection);
-      const loadNFTs =  async () => {
       let nft:NFT;
       let nftList:NFT[] = [];
       let name:string;
@@ -66,7 +72,9 @@ const Gallery:React.FC = () => {
 
       }).catch(err => console.log(err));
     }
-    loadNFTs();
+
+    useEffect( () => {
+    loadUserNFTs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[publicKey,connection])
 
