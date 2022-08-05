@@ -20,7 +20,7 @@ const Main:React.FC = () => {
    * @returns {void} updates the NFTS state of the Main component 
    */
   const loadCandyMachineMints =  async () => {
-      const candyMachine = new PublicKey(`${process.env.REACT_APP_CANDY_MACHINE_ID}`);
+      const candyMachine = new PublicKey(`${process.env.CANDY_MACHINE_ID}`);
       const metaplex = new Metaplex(connection);
       let nft:NFT;
       let nftList:NFT[] = [];

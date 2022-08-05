@@ -22,7 +22,7 @@ const  Holders:React.FC = () => {
    */
   const authenticateNFT = async () => {
     if(publicKey === null) {return;}
-    const collectionAddress:PublicKey = new PublicKey(`${process.env.REACT_APP_CANDY_MACHINE_MINT_ADDRESS}`)
+    const collectionAddress:PublicKey = new PublicKey(`${process.env.CANDY_MACHINE_MINT_ADDRESS}`)
     const metaplex = new Metaplex(connection);
     let pubKey;
     const nfts = await metaplex.nfts().findAllByOwner(publicKey);
