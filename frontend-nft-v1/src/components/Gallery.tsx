@@ -23,7 +23,7 @@ const Gallery:React.FC = () => {
      */
     const loadUserNFTs =  async () => {
       if(publicKey === null) {return;}
-      const collectionAddress:PublicKey = new PublicKey(`${process.env.REACT_APP_CANDY_MACHINE_MINT_ADDRESS}`)
+      const collectionAddress:PublicKey = new PublicKey(`${process.env.CANDY_MACHINE_MINT_ADDRESS}`)
       const metaplex = new Metaplex(connection);
       let nft:NFT;
       let nftList:NFT[] = [];
