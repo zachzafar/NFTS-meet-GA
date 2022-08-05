@@ -10,25 +10,34 @@ interface Props {
   NFT:NFT|undefined
 }
 
+/**
+ * Creates a family Tree of NFT objects starting with the newest generation 
+ * @param {NFT} NFT NFT object which is checked to see if was made from two other NFTs. It is displayed first as the root node of this Tree component
+ * @returns {ReactJSXElement} the NFT object is returned as well as a recursive call to this Tree component if the original NFT object has parents
+ */
 const  FamilyTree:React.FC<Props> = ({NFT}) => {
   const [parentNFTs, setparentNFTs] = useState<NFT[]>()
   const { connection } = useConnection();
   let key = 0;
-  
-  useEffect(() => {
-    if(NFT === undefined){return}
-    let mintlist:PublicKey[] = []
-    let parentAddress1 = ''
-    let parentAddress2 = ''
-    if(NFT.parentMintAddresses !== undefined){
-      parentAddress1 = NFT.parentMintAddresses[0] ?? ''
-      parentAddress2 = NFT.parentMintAddresses[1] ?? ''
-    }
-    if(parentAddress1 === '') {return}
-    mintlist.push(new PublicKey(parentAddress1))
-    if(parentAddress2 !== '') mintlist.push(new PublicKey(parentAddress2))
-    const metaplex = new Metaplex(connection);
-    const loadNFTs =  async () => {
+
+  /**
+   * Loads parent Nfts of the NFT prop
+   * @returns {void} sets the parentNFTs state of the FamilyTree component
+   */
+  const loadNFTs =  async () => {
+      if(NFT === undefined){return}
+      let mintlist:PublicKey[] = []
+      let parentAddress1 = ''
+      let parentAddress2 = ''
+      if(NFT.parentMintAddresses !== undefined){
+        parentAddress1 = NFT.parentMintAddresses[0] ?? ''
+        parentAddress2 = NFT.parentMintAddresses[1] ?? ''
+      }
+      if(parentAddress1 === '') {return}
+      mintlist.push(new PublicKey(parentAddress1))
+      if(parentAddress2 !== '') mintlist.push(new PublicKey(parentAddress2))
+
+      const metaplex = new Metaplex(connection);
       let nftList:NFT[] = [];
       let name:string;
       let description:string;
@@ -78,7 +87,10 @@ const  FamilyTree:React.FC<Props> = ({NFT}) => {
         setparentNFTs(nftList);
     }).catch(err => console.log(err));  
   }
+  
+  useEffect(() => {
   loadNFTs();
+// eslint-disable-next-line react-hooks/exhaustive-deps
 },[NFT, connection])
   
   return (

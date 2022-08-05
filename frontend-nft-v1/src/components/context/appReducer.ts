@@ -1,5 +1,9 @@
 import { ActionKind, State, Action, NFT } from '../types/types'
 
+/**
+ * @type {State}
+ * Initial State object for AppContext
+ */
 export const initialState: State = {
     userStatus: false,
     modalStatus: false,
@@ -11,7 +15,12 @@ export const initialState: State = {
 }
 
 
-
+/**
+ * App reducer is used to update the state of the AppContext
+ * @param {State} state The current state of the AppContext
+ * @param {Action} action The action to be executed to alter the state
+ * @returns 
+ */
 const appReducer = (state: State, action: Action) => {
     const { type, payload } = action;
     switch (type) {

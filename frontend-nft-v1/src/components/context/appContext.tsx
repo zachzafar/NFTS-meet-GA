@@ -1,3 +1,10 @@
+/**
+ * This context provider is used to manage state across the application, it manages the:
+ * {boolean} userStatus(whether or not the user has an Nft from the collection)
+ * {boolean} modalStatus(whether or not the NFTModal should be rendered or not)
+ * {NFT} modalNFT(The NFT which will be used to populate the modal)
+ * {NFT[]} NFTs(A list of NFTs in the users gallery)
+ */
 import React, {createContext,useReducer, useContext} from 'react';
 import appReducer,{ initialState} from './appReducer';
 import {ActionKind,NFT} from '../types/types'
@@ -6,6 +13,12 @@ export const AppContext = createContext(initialState);
 type ContextProviderProps = {
     children: React.ReactNode
 }
+
+/**
+ * Provides access to variables and functions within the State of the Context provider
+ * @param {ContextProviderProps} children 
+ * @returns {React.Context<State>} 
+ */
 export  const AppProvider = ({children}:ContextProviderProps) => {
     const [state,dispatch] = useReducer(appReducer,initialState);   
 
@@ -35,6 +48,10 @@ export  const AppProvider = ({children}:ContextProviderProps) => {
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>
 }
 
+/**
+ * Returns AppContext
+ * @returns {State}
+ */
 const useAppContext = () => {
     const context = useContext(AppContext)
     if(context === undefined) {

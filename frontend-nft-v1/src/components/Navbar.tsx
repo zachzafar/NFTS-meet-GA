@@ -3,6 +3,10 @@ import { Link, useLocation } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Stack, Button } from '@mui/material';
 import useAppContext from './context/appContext'
 
+/**
+ * Displays the Navbar
+ * @returns {ReactJSXElement}
+ */
 const Navbar:React.FC = () => {
   let { pathname } = useLocation();
   let {userStatus} = useAppContext();

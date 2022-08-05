@@ -4,18 +4,28 @@ import CardMedia from '@mui/material/CardMedia';
 import Card from '@mui/material/Card';
 import {NFT} from './types/types';
 
+/**
+ * Interface describing props for ContentLibrary component
+ * @interface
+ */
 interface Props {
-  contentType:string;
   setParentNFT: (NFT:NFT ) => void;
   mutate: (NFT:NFT) => void;
   parentNFT:NFT|undefined;
 }
 
-const ContentLibrary: React.FC<Props> = ({contentType,setParentNFT,mutate,parentNFT}) => {
+/**
+ * Display all the dudes owned by the user
+ * @param {function} setParentNFT updates the state of the Evolve component with an NFT object
+ * @param {function} mutate mutate function changes the DNA attribute of an NFT object
+ * @param {NFT} parentNFT represents parent NFT Object
+ * @returns {ReactJSXElement} 
+ */
+const ContentLibrary: React.FC<Props> = ({setParentNFT,mutate,parentNFT}) => {
   const [dudes,setDudes] = useState<NFT[]>([])
   const {NFTs} =useAppContext();
   let key = 0;
-  //let attributeTypes:{[key:string]:any} =  {'head decorations': attributes.headdecoration,'layer 0':attributes.layer_0,'layer 1': attributes.layer_1,'layer 2': attributes.layer_2,'layer 3':attributes.layer_3,'layer 4':attributes.layer_4,'layer 5':attributes.layer_5,'layer 6': attributes.layer_6,'layer 7': attributes.layer_7,'layer 8':attributes.layer_8,'layer 9':attributes.layer_9,'layer 10': attributes.layer_10,'layer 11':attributes.layer_11,'layer 12':attributes.layer_12,'layer 13': attributes.layer_13};
+
   useEffect(() =>{
   setDudes(NFTs);
   },[NFTs]);

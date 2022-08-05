@@ -1,6 +1,10 @@
 import React from 'react';
 import { Paper, Box, Button } from '@mui/material';
 
+/**
+ * THIS FEATURE IS UNDER DEVELOPMENT AND WILL BE AN ALTERNATIVE TO THE CURRENT METHOD OF MINTING NFTS FROM A CANDY MACHINE
+ * @returns {ReactJSXElement}
+ */
 const Mint:React.FC = () => {
   return (
     <div className='grid place-items-center'>
