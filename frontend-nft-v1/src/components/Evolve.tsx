@@ -13,7 +13,6 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 
 /**
  * Component used for the creation and minting of new NFTs from user's currently owned Dudes
- * @returns {ReactJSXElement}
  */
 const Evolve:React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

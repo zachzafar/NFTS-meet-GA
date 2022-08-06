@@ -4,7 +4,6 @@ import {Typography} from '@mui/material'
 
 /**
  * Contains solana WalletMultiButton component which is used to get a users publicKey address
- * @returns {ReactJSXElement}
  */
 const LoginHolders:React.FC = () => {
     

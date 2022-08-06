@@ -8,7 +8,6 @@ import { Button, Typography, CircularProgress, Box } from '@mui/material';
 
 /**
  * Displays landing page as well as Dudes that have already been minted
- * @returns {ReactJSXElement}
  */
 const Main:React.FC = () => {
   const [NFTS, setNFTS] = useState<NFT[]>([]);
@@ -17,7 +16,7 @@ const Main:React.FC = () => {
 
   /**
    * Loads Nfts that have already been minted from the candyMachine and updates the component state with a list of NFT objects
-   * @returns {void} updates the NFTS state of the Main component 
+   * Updates the NFTS state of the Main component 
    */
   const loadCandyMachineMints =  async () => {
       const candyMachine = new PublicKey(`${process.env.REACT_APP_CANDY_MACHINE_ID}`);

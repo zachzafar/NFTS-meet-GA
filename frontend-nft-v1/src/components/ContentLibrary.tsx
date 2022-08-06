@@ -6,7 +6,6 @@ import {NFT} from './types/types';
 
 /**
  * Interface describing props for ContentLibrary component
- * @interface
  */
 interface Props {
   setParentNFT: (NFT:NFT ) => void;
@@ -16,10 +15,10 @@ interface Props {
 
 /**
  * Display all the dudes owned by the user
- * @param {function} setParentNFT updates the state of the Evolve component with an NFT object
- * @param {function} mutate mutate function changes the DNA attribute of an NFT object
- * @param {NFT} parentNFT represents parent NFT Object
- * @returns {ReactJSXElement} 
+ * Takes a function called setParentNFT which updates the state of the Evolve component with an NFT object
+ * Takes function called mutate  which changes the DNA attribute of an NFT object
+ * Takes an NFT object as a prop called parentNFT  which represents parent NFT Object
+ * 
  */
 const ContentLibrary: React.FC<Props> = ({setParentNFT,mutate,parentNFT}) => {
   const [dudes,setDudes] = useState<NFT[]>([])

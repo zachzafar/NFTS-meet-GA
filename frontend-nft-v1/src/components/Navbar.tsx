@@ -5,7 +5,6 @@ import useAppContext from './context/appContext'
 
 /**
  * Displays the Navbar
- * @returns {ReactJSXElement}
  */
 const Navbar:React.FC = () => {
   let { pathname } = useLocation();

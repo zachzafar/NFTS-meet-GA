@@ -14,8 +14,7 @@ interface Props {
 
 /**
  * Displays the image as well as name and description of and NFT object when clicked a modal screen with more details is displayed
- * @param {NFT} NFT NFT object containing data used to populate the component
- * @returns {ReactJSXElement}
+ * Takes an NFT object as a prop containing data used to populate the component
  */
 const NFTcard : React.FC<Props> = ({NFT}) => {
   const { updateModalStatusAndModalNft } = useAppContext();
