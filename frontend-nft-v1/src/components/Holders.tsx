@@ -8,7 +8,6 @@ import useAppContext from './context/appContext'
 
 /**
  * Component used to display user NFTs and authenticate users
- * @returns {ReactJSXElement}
  */
 const  Holders:React.FC = () => {
   const { publicKey } = useWallet();
@@ -18,7 +17,7 @@ const  Holders:React.FC = () => {
 
   /**
    * Checks if user has an Nft from the collection and updates the user status
-   * @returns {void} updates the status of a user(whether they have an Nft from the colection or not)
+   * Updates the status of a user(whether they have an Nft from the colection or not)
    */
   const authenticateNFT = async () => {
     if(publicKey === null) {return;}

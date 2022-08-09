@@ -26,7 +26,6 @@ require('@solana/wallet-adapter-react-ui/styles.css');
 
 /**
  * Root of the component tree this component is rendered in the index.ts file and is the main component of the application
- * @returns {React.JSXElement}
  */
 const App: React.FC = () => {
   const {modalStatus,modalNft} = useAppContext();

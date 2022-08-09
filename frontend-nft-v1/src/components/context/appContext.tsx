@@ -7,7 +7,7 @@
  */
 import React, {createContext,useReducer, useContext} from 'react';
 import appReducer,{ initialState} from './appReducer';
-import {ActionKind,NFT} from '../types/types'
+import {ActionKind,NFT, State} from '../types/types';
 export const AppContext = createContext(initialState);
 
 type ContextProviderProps = {
@@ -17,7 +17,6 @@ type ContextProviderProps = {
 /**
  * Provides access to variables and functions within the State of the Context provider
  * @param {ContextProviderProps} children 
- * @returns {React.Context<State>} 
  */
 export  const AppProvider = ({children}:ContextProviderProps) => {
     const [state,dispatch] = useReducer(appReducer,initialState);   
@@ -52,7 +51,7 @@ export  const AppProvider = ({children}:ContextProviderProps) => {
  * Returns AppContext
  * @returns {State}
  */
-const useAppContext = () => {
+const useAppContext = (): State => {
     const context = useContext(AppContext)
     if(context === undefined) {
         throw new Error("useAppContext must be witin AppContext provider")

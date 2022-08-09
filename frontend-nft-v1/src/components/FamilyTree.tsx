@@ -12,8 +12,8 @@ interface Props {
 
 /**
  * Creates a family Tree of NFT objects starting with the newest generation 
- * @param {NFT} NFT NFT object which is checked to see if was made from two other NFTs. It is displayed first as the root node of this Tree component
- * @returns {ReactJSXElement} the NFT object is returned as well as a recursive call to this Tree component if the original NFT object has parents
+ * Takes an NFT object as a prop which is checked to see if was made from two other NFTs. It is displayed first as the root node of this Tree component
+ * The NFT object is returned as well as a recursive call to this Tree component if the original NFT object has parents
  */
 const  FamilyTree:React.FC<Props> = ({NFT}) => {
   const [parentNFTs, setparentNFTs] = useState<NFT[]>()
@@ -22,7 +22,7 @@ const  FamilyTree:React.FC<Props> = ({NFT}) => {
 
   /**
    * Loads parent Nfts of the NFT prop
-   * @returns {void} sets the parentNFTs state of the FamilyTree component
+   * Sets the parentNFTs state of the FamilyTree component
    */
   const loadNFTs =  async () => {
       if(NFT === undefined){return}

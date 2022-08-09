@@ -12,8 +12,7 @@ interface Props {
 /**
  * Displays a modal screen which contains more details about the NFT such as its mint address and its parent addresses
  * it also displaya button which when clicked displays the family Tree of the NFT
- * @param {NFT} NFT NFT objrct which is used to populate the modal screen
- * @returns {ReactJSXElement}
+ * Takes an NFT object as a prop which is used to populate the modal screen
  */
 const NFTModal:React.FC<Props> = ({NFT}) => {
   const {updateModalStatusAndModalNft} = useAppContext();

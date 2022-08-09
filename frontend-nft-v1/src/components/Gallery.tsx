@@ -8,8 +8,7 @@ import {NFT} from './types/types'
 
 
 /**
- * Displays all of the Dude NFTs owned by the user
- * @returns {ReactJSXElement} 
+ * Displays all of the Dude NFTs owned by the user 
  */
 const Gallery:React.FC = () => {
     const { connection } = useConnection();
@@ -19,7 +18,7 @@ const Gallery:React.FC = () => {
 
     /**
      * Loads all NFTs owned by user that are from the Nft collection
-     * @returns {void} updates the the AppContext State with the Nfts
+     * Updates the the AppContext State with the Nfts
      */
     const loadUserNFTs =  async () => {
       if(publicKey === null) {return;}

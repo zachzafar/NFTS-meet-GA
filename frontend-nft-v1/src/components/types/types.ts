@@ -1,6 +1,5 @@
 /**
  * Enum for the kind of actions that can occur with the AppContext hook
- * @typedef {enum} ActionKind
  * @property {string} SAVE_NFTS
  * @property {string} UPDATE_USER_STATUS
  * @property {string} UPDATE_MODAL_STATUS_AND_MODAL_NFT
@@ -13,7 +12,6 @@ export enum ActionKind {
 
 /**
  * Interface describing how NFT object should be implemented
- * @typedef {interface} NFT 
  * @property {string} mint Represents the mint address of the Nft
  * @property {string[]} parentMintAddresses Represents the mint addresses of the Nfts used in the creation of the Nft
  * @property {string} name Represents the name of the Nft
@@ -32,7 +30,6 @@ export interface NFT {
 
 /**
  * Interface describing Actions on the AppContext hook 
- * @typedef {interface} Action
  * @property {ActionKind} type Describes type of action to be performed
  * @property {any} payload Object containing new data to update state
  */
@@ -43,7 +40,6 @@ export interface Action {
 
 /**
  * Interface describing the State within the AppContext hook
- * @typedef {interface} State 
  * @property {boolean} userStatus Describes the status of a user owning an Nft from the collection as a boolean
  * @property {boolean} modalStatus Describes whether the NFTmodal component should be displayed or not 
  * @property {NFT | undefined} modalNft Represents the NFT object that should populate the NFTmodal component
