@@ -8,9 +8,10 @@ import {NFT} from './types/types';
  * Interface describing props for ContentLibrary component
  */
 interface Props {
-  setParentNFT: (NFT:NFT ) => void;
+  setParentNFT: (NFT:NFT,type:string|undefined ) => void;
   mutate: (NFT:NFT) => void;
   parentNFT:NFT|undefined;
+  type: string|undefined;
 }
 
 /**
@@ -20,7 +21,7 @@ interface Props {
  * Takes an NFT object as a prop called parentNFT  which represents parent NFT Object
  * 
  */
-const ContentLibrary: React.FC<Props> = ({setParentNFT,mutate,parentNFT}) => {
+const ContentLibrary: React.FC<Props> = ({setParentNFT,mutate,parentNFT,type}) => {
   const [dudes,setDudes] = useState<NFT[]>([])
   const {NFTs} =useAppContext();
   let key = 0;
@@ -30,8 +31,7 @@ const ContentLibrary: React.FC<Props> = ({setParentNFT,mutate,parentNFT}) => {
   },[NFTs]);
 
  const  click = (d:NFT) => {
-    setParentNFT(d) 
-    if(parentNFT) mutate(parentNFT);
+    setParentNFT(d,type) 
   }
   
   return(

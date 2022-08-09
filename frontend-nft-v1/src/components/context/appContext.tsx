@@ -7,7 +7,7 @@
  */
 import React, {createContext,useReducer, useContext} from 'react';
 import appReducer,{ initialState} from './appReducer';
-import {ActionKind,NFT, State} from '../types/types'
+import {ActionKind,NFT, State} from '../types/types';
 export const AppContext = createContext(initialState);
 
 type ContextProviderProps = {

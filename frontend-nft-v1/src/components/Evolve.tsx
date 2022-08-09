@@ -9,14 +9,13 @@ import mergeImages from 'merge-images';
 import {bundlrStorage, Metaplex, Nft, useMetaplexFileFromBrowser, walletAdapterIdentity} from '@metaplex-foundation/js'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 //import { PublicKey, Transaction } from '@solana/web3.js';
-//import { createTransferCheckedInstruction,getOrCreateAssociatedTokenAccount } from '@solana/spl-token';
+//import { getAssociatedTokenAddress,createAssociatedTokenAccountInstruction, createTransferCheckedInstruction } from '@solana/spl-token';
 
 /**
  * Component used for the creation and minting of new NFTs from user's currently owned Dudes
  */
 const Evolve:React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [contentType, setContentType] = useState('');
   const [parent1NFT, setparent1NFT] = useState<NFT>()
   const [parent2NFT, setparent2NFT] = useState<NFT>()
   const [child1NFT, setchild1NFT] = useState<NFT>()
@@ -27,7 +26,6 @@ const Evolve:React.FC = () => {
   let recipe:{[key:string]:any} = [attributes.headdecoration,attributes.layer_0,attributes.layer_1,attributes.layer_2,attributes.layer_3,attributes.layer_4,attributes.layer_5,attributes.layer_6,attributes.layer_7,attributes.layer_8,attributes.layer_9,attributes.layer_10,attributes.layer_11,attributes.layer_12,attributes.layer_13]
   let cards:ReactJSXElement;
   let sidebarOptions:string[] = ['dudes','head decorations','layer 0','layer 1','layer 2','layer 3','layer 4','layer 5','layer 6','layer 7','layer 8','layer 9','layer 10','layer 11','layer 12','layer 13']
-  
   /**
    * Confirm Nft successfully minted
    * @param {Nft} newNFT Newly created Nft
@@ -45,25 +43,25 @@ const Evolve:React.FC = () => {
    * @param {NFT} NFT NFT object to be update component state with 
    * @returns 
    */
-  const setParentNFT = (NFT:NFT) => {
+  const setParentNFT = (NFT:NFT,type:string|undefined) => {
+    if(type === 'mutate'){
+      setchild1NFT(undefined)
+      setparent1NFT(NFT);
+    } else if(type === 'crossover'){
       if(parent1NFT === undefined){
         setparent1NFT(NFT);
-        return;
-      } 
-      if (parent2NFT === undefined){
-        setparent2NFT(NFT);
-        return;
-      }
-      if(parent1NFT !== undefined){
+        console.log('changing parent 1')
+      } else if(parent2NFT === undefined) {
+        setparent2NFT(NFT)
+        console.log('changing parent 2')
+      } else if(parent1NFT !== undefined && parent2NFT!== undefined){
+        console.log('changing parent 1 and 2')
+        setparent2NFT(undefined)
         setchild1NFT(undefined);
         setchild2NFT(undefined);
         setparent1NFT(NFT);
-        return;
       }
-        if(parent2NFT !== undefined){
-        setparent2NFT(NFT);
-        return;
-      }
+    }
   }
 
   /**
@@ -150,7 +148,8 @@ const Evolve:React.FC = () => {
     }
     let childDNA = parentNFT.DNA.replace('[','').replace(']','').split(',')
     let randomIndex = Math.floor(Math.random() * childDNA.length);
-    let randomIngredientIndex = Math.floor(Math.random() * recipe[randomIndex].length);
+    let randomIngredientIndex = Math.floor(Math.random() * (Object.keys(recipe[randomIndex]).length - 1));
+    console.log(randomIndex, randomIngredientIndex)
     childDNA[randomIndex] = String(randomIngredientIndex);
     if(attributeType && attributeIndex){
       let attribute = sidebarOptions.indexOf(attributeType)
@@ -165,7 +164,10 @@ const Evolve:React.FC = () => {
    * @returns {Nft} new dude Nft
    */
   const mint =  async (NFT:NFT) => {
-    if (wallet === null) {return};
+    if (wallet === null) {
+      console.log('wallet not connected')
+      return
+    }
     console.log('minting....')
     let res = await fetch(NFT.image)
     let data = await res.blob()
@@ -186,6 +188,7 @@ const Evolve:React.FC = () => {
     providerUrl: 'https://api.devnet.solana.com',
     timeout: 60000,
 }));
+    console.log('creating uri')
     const { uri } = await metaplex.nfts().uploadMetadata({
       "name": "DudeOnChain",
     "symbol": "NB",
@@ -220,11 +223,25 @@ const Evolve:React.FC = () => {
    * Sends Nft back to a wllet which the user has no access to in our case this wallet is the candy machine address
    * @param NFT 
    * @returns 
-   */
-  const burn = async (NFT:NFT) => {
 
-    return
+  const burn = async (NFT:NFT) => {
+    if(!wallet.publicKey || process.env.REACT_APP_CANDY_MACHINE_MINT_ADDRESS === undefined){return}
+    let NFTpubKey = new PublicKey(NFT.mint)
+    let candyMachince = new PublicKey(process.env.REACT_APP_CANDY_MACHINE_MINT_ADDRESS)
+    let ownerATA = await getAssociatedTokenAddress(NFTpubKey,wallet.publicKey,false)
+    let tx = new  Transaction()
+    tx.add(createAssociatedTokenAccountInstruction(wallet.publicKey,ownerATA,candyMachince,NFTpubKey))
+    const signature = await wallet.sendTransaction(tx,connection)
+    if(signature){
+      let candyMachiineATA = await getAssociatedTokenAddress(NFTpubKey,candyMachince,false)
+      let newtx = new Transaction();
+      newtx.add(createTransferCheckedInstruction(ownerATA,NFTpubKey,candyMachiineATA,wallet.publicKey,1,0)) 
+      console.log(`burn complete: ${await wallet.sendTransaction(newtx,connection)}`)
+    } else{
+      console.log('token wasnt transfered')
+    }
   }
+*/
 
   /**
    * 
@@ -236,20 +253,20 @@ const Evolve:React.FC = () => {
     if(child1NFT && !child2NFT && parent1NFT && !parent2NFT){
       console.log('minting new mutation');
       mint(child1NFT)
-      burn(parent1NFT)
+  //  burn(parent1NFT)
     } else if (child1NFT && child2NFT && parent1NFT && parent2NFT){
       console.log('minting new crossover')
       mint(child1NFT)
       mint(child2NFT)
-      burn(parent1NFT)
-      burn(parent2NFT)
+  //  burn(parent1NFT)
+  //  burn(parent2NFT)
     }
   }
 
 
   switch (type) {
     case 'mutate':
-    if(parent1NFT && child1NFT === undefined ){mutate(parent1NFT)}
+    if(parent1NFT && child1NFT === undefined && type === 'mutate'){mutate(parent1NFT)}
     cards = (<div className=" pl-60 w-full h-full grid place-items-center mt-1">
         <Card  className='bg-white' sx={{ maxWidth: 250 ,width: 250  }}>
           {parent1NFT ? <CardMedia 
@@ -294,7 +311,7 @@ const Evolve:React.FC = () => {
         </div>)  
     break;
     case 'crossover':
-       if(parent1NFT && parent2NFT && child1NFT === undefined){crossover(parent1NFT,parent2NFT);}
+       if(parent1NFT && parent2NFT && child1NFT === undefined && child2NFT === undefined && type === 'crossover') {crossover(parent1NFT,parent2NFT);}
     cards = (
     <div className="flex flex-col place-items-center ">
     <div className="pl-60 w-full h-full grid grid-cols-2 gap-10 place-items-center">
@@ -396,7 +413,7 @@ const Evolve:React.FC = () => {
 
   return (
   <div className='flex flex-row h-full w-full'>
-    <ContentLibrary mutate={mutate} setParentNFT={setParentNFT} parentNFT={parent1NFT}/>
+    <ContentLibrary mutate={mutate} setParentNFT={setParentNFT} parentNFT={parent1NFT} type={type}/>
     <div className='w-full h-full bg-gray-100 grid place-items-center'>
       {cards}
     </div>
