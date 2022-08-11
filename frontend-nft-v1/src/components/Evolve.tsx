@@ -8,8 +8,10 @@ import {NFT} from './types/types'
 import mergeImages from 'merge-images';
 import {bundlrStorage, Metaplex, Nft, useMetaplexFileFromBrowser, walletAdapterIdentity} from '@metaplex-foundation/js'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-//import { PublicKey, Transaction } from '@solana/web3.js';
-//import { getAssociatedTokenAddress,createAssociatedTokenAccountInstruction, createTransferCheckedInstruction } from '@solana/spl-token';
+import { createAssociatedTokenAccountInstruction, createTransferInstruction,getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { Keypair, PublicKey, Transaction} from '@solana/web3.js';
+
+
 
 /**
  * Component used for the creation and minting of new NFTs from user's currently owned Dudes
@@ -35,6 +37,7 @@ const Evolve:React.FC = () => {
       alert('dude has been succesfully minted')
     } else {
       alert('Hmm something went wrong with that mint')
+      return true
     }
   }
   
@@ -216,50 +219,57 @@ const Evolve:React.FC = () => {
     const { nft } = await metaplex.nfts().create({
       uri: uri,
     })
-    confirmNFt(nft);
+     return  confirmNFt(nft);
   }
 
   /**
-   * Sends Nft back to a wllet which the user has no access to in our case this wallet is the candy machine address
+   * Sends Nft back to a wallet which the user has no access to in our case this wallet is a newly generated KeyPair
    * @param NFT 
    * @returns 
-
-  const burn = async (NFT:NFT) => {
-    if(!wallet.publicKey || process.env.REACT_APP_CANDY_MACHINE_MINT_ADDRESS === undefined){return}
-    let NFTpubKey = new PublicKey(NFT.mint)
-    let candyMachince = new PublicKey(process.env.REACT_APP_CANDY_MACHINE_MINT_ADDRESS)
-    let ownerATA = await getAssociatedTokenAddress(NFTpubKey,wallet.publicKey,false)
-    let tx = new  Transaction()
-    tx.add(createAssociatedTokenAccountInstruction(wallet.publicKey,ownerATA,candyMachince,NFTpubKey))
-    const signature = await wallet.sendTransaction(tx,connection)
-    if(signature){
-      let candyMachiineATA = await getAssociatedTokenAddress(NFTpubKey,candyMachince,false)
-      let newtx = new Transaction();
-      newtx.add(createTransferCheckedInstruction(ownerATA,NFTpubKey,candyMachiineATA,wallet.publicKey,1,0)) 
-      console.log(`burn complete: ${await wallet.sendTransaction(newtx,connection)}`)
-    } else{
-      console.log('token wasnt transfered')
-    }
-  }
 */
-
+ const burn = async (NFT:NFT) => {
+  if(wallet.publicKey===null || process.env.REACT_APP_CANDY_MACHINE_ID === undefined) {return} 
+  const burnKey = Keypair.generate();
+  let mintPubKey = new PublicKey(NFT.mint)
+  let tx1 = new Transaction();
+  let ata = await getAssociatedTokenAddress(mintPubKey,burnKey.publicKey,false);
+  let ownerTokenAccount = await getAssociatedTokenAddress(mintPubKey,wallet.publicKey,false);
+  connection.requestAirdrop(ownerTokenAccount,1e9)
+  tx1.add(
+    createAssociatedTokenAccountInstruction(wallet.publicKey, ata,burnKey.publicKey,mintPubKey)
+  )
+  wallet.sendTransaction(tx1,connection).then((confirmation) => {
+    if(wallet.publicKey=== null){return}
+    let newTx = new Transaction()
+    newTx.add(createTransferInstruction(ownerTokenAccount,ata,wallet.publicKey,1,[],TOKEN_PROGRAM_ID))
+    wallet.sendTransaction(newTx,connection).then((confirmation) => {
+      return confirmation
+    })
+  }).catch((err) => {
+    console.log(err)
+  })
+ }
   /**
    * 
    * @returns 
    */
-  const mintAndBurn = () => {
+  const mintAndBurn = async () => {
     if(!child1NFT && !child2NFT){return}
     console.log('minting and burning')
     if(child1NFT && !child2NFT && parent1NFT && !parent2NFT){
       console.log('minting new mutation');
-      mint(child1NFT)
-  //  burn(parent1NFT)
+       mint(child1NFT).then(() =>{
+        burn(parent1NFT)
+       })   
     } else if (child1NFT && child2NFT && parent1NFT && parent2NFT){
       console.log('minting new crossover')
-      mint(child1NFT)
-      mint(child2NFT)
-  //  burn(parent1NFT)
-  //  burn(parent2NFT)
+      mint(child1NFT).then(() => {
+        burn(parent1NFT)
+      }).then(()=>{
+        mint(child2NFT)
+      }).then(()=>{
+        burn(parent2NFT)
+      })     
     }
   }
 
@@ -422,9 +432,5 @@ const Evolve:React.FC = () => {
 }
 
 export default Evolve;
-
-
-
-
 
 
