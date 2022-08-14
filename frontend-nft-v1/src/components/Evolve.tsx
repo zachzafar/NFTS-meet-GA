@@ -22,12 +22,13 @@ const Evolve:React.FC = () => {
   const [parent2NFT, setparent2NFT] = useState<NFT>()
   const [child1NFT, setchild1NFT] = useState<NFT>()
   const [child2NFT, setchild2NFT] = useState<NFT>()
+  const [MB1,setMB1] = useState<string>('false')
   const {connection} = useConnection();
   const  wallet = useWallet();
   const {type}= useParams();
   let recipe:{[key:string]:any} = [attributes.headdecoration,attributes.layer_0,attributes.layer_1,attributes.layer_2,attributes.layer_3,attributes.layer_4,attributes.layer_5,attributes.layer_6,attributes.layer_7,attributes.layer_8,attributes.layer_9,attributes.layer_10,attributes.layer_11,attributes.layer_12,attributes.layer_13]
   let cards:ReactJSXElement;
-  let sidebarOptions:string[] = ['dudes','head decorations','layer 0','layer 1','layer 2','layer 3','layer 4','layer 5','layer 6','layer 7','layer 8','layer 9','layer 10','layer 11','layer 12','layer 13']
+
   /**
    * Confirm Nft successfully minted
    * @param {Nft} newNFT Newly created Nft
@@ -35,10 +36,16 @@ const Evolve:React.FC = () => {
   const confirmNFt = (newNFT:Nft) => {
     if(newNFT.editionTask.getStatus() === 'successful'){ 
       alert('dude has been succesfully minted')
+      return true
     } else {
       alert('Hmm something went wrong with that mint')
-      return true
+      
     }
+  }
+
+  const confirmBurn = (txhash:string) => {
+    if(txhash) return true
+    return false
   }
   
   /**
@@ -144,7 +151,7 @@ const Evolve:React.FC = () => {
    * @param {string} attributeIndex 
    * @returns 
    */
-  const mutate = (parentNFT:NFT,attributeType?:string,attributeIndex?:string) => {
+  const mutate = (parentNFT:NFT) => {
     if(parentNFT.DNA === undefined) {
       console.log('mutate function was called but parent dna not present')
       return
@@ -154,10 +161,6 @@ const Evolve:React.FC = () => {
     let randomIngredientIndex = Math.floor(Math.random() * (Object.keys(recipe[randomIndex]).length - 1));
     console.log(randomIndex, randomIngredientIndex)
     childDNA[randomIndex] = String(randomIngredientIndex);
-    if(attributeType && attributeIndex){
-      let attribute = sidebarOptions.indexOf(attributeType)
-      childDNA[attribute] = attributeIndex
-    }
     generateDudeNFT([parentNFT.mint],childDNA,setchild1NFT);
   }
 
@@ -236,21 +239,15 @@ const Evolve:React.FC = () => {
   let ownerTokenAccount = await getAssociatedTokenAddress(mintPubKey,wallet.publicKey,false);
   connection.requestAirdrop(ownerTokenAccount,1e9)
   tx1.add(
-    createAssociatedTokenAccountInstruction(wallet.publicKey, ata,burnKey.publicKey,mintPubKey)
+    createAssociatedTokenAccountInstruction(wallet.publicKey, ata,burnKey.publicKey,mintPubKey),
+    createTransferInstruction(ownerTokenAccount,ata,wallet.publicKey,1,[],TOKEN_PROGRAM_ID)
   )
-  wallet.sendTransaction(tx1,connection).then((confirmation) => {
-    if(wallet.publicKey=== null){return}
-    let newTx = new Transaction()
-    newTx.add(createTransferInstruction(ownerTokenAccount,ata,wallet.publicKey,1,[],TOKEN_PROGRAM_ID))
-    wallet.sendTransaction(newTx,connection).then((confirmation) => {
-      return confirmation
-    })
-  }).catch((err) => {
-    console.log(err)
-  })
+  const confirmation = await wallet.sendTransaction(tx1,connection)
+  return confirmBurn(confirmation)
+
  }
   /**
-   * 
+   * Handles the creation of new Nfts from childNFTs and burning of parentNFTs depending on the evolutionary process
    * @returns 
    */
   const mintAndBurn = async () => {
@@ -258,21 +255,28 @@ const Evolve:React.FC = () => {
     console.log('minting and burning')
     if(child1NFT && !child2NFT && parent1NFT && !parent2NFT){
       console.log('minting new mutation');
-       mint(child1NFT).then(() =>{
+       mint(child1NFT).then((confirmation) =>{
+        console.log('burn')
         burn(parent1NFT)
+        
        })   
     } else if (child1NFT && child2NFT && parent1NFT && parent2NFT){
       console.log('minting new crossover')
-      mint(child1NFT).then(() => {
-        burn(parent1NFT)
-      }).then(()=>{
-        mint(child2NFT)
-      }).then(()=>{
-        burn(parent2NFT)
-      })     
+      mint(child1NFT).then((confirmation) => {
+        burn(parent1NFT).then((confirmation) =>{
+          setMB1('true')
+        })
+      })
     }
   }
-
+  useEffect(() => {
+    if(!child2NFT || !parent2NFT || MB1 === 'false'){return}
+    mint(child2NFT).then(() =>{
+        burn(parent2NFT)
+        setMB1('false')
+  })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[MB1])
 
   switch (type) {
     case 'mutate':
