@@ -24,15 +24,20 @@ const  Holders:React.FC = () => {
     const collectionAddress:PublicKey = new PublicKey(`${process.env.REACT_APP_CANDY_MACHINE_MINT_ADDRESS}`)
     const metaplex = new Metaplex(connection);
     let pubKey;
+    let name;
     const nfts = await metaplex.nfts().findAllByOwner(publicKey);
       for(let i = 0; i < nfts.length; i++) {
         pubKey = nfts[i]['collection'] ?? null;
+        name = nfts[i]['name'] ?? null;
         if(pubKey !== null && collectionAddress.equals(pubKey['key'])){
+          updateUserStatus(true);
+          return;
+        } else if(name === 'DudeOnChain'){
           updateUserStatus(true);
           return;
         }
       }
-      console.log('sorry you need a dude to enter this are')
+      alert('sorry you need a dude to enter this are')
     }
 
   useEffect(() => {
