@@ -2,14 +2,17 @@ from nft_generator import NFTGenerator
 from copy import deepcopy
 import os
 import json
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 # Metadata Base. MUST BE EDITED.
-BASE_NAME = "DudeOnChain"                       # Require edit
+BASE_NAME = os.getenv("BASE_NAME")                            # Require edit
 BASE_JSON = {
     "name": BASE_NAME,
-    "symbol": "DOC",                            # Require edit
-    "description": "DudeOnChain",               # Require edit
-    "seller_fee_basis_points": 250,             # Require edit
+    "symbol": os.getenv("SYMBOL"),                            # Require edit
+    "description": os.getenv("DESC"),                         # Require edit
+    "seller_fee_basis_points": os.getenv("SELLER_FEE"),       # Require edit
     "image": str,
     "attributes": list(),
     "properties": dict()
@@ -18,8 +21,8 @@ BASE_JSON = {
 # change or add if more share parties
 CREATORS_AND_SHARE = [
     {
-        "address": "45Mi4bjAxeXMJhrNfNmGPzCoHtosk1oDvo5yimtFKFbZ",
-        "share": 100
+        "address": os.getenv("CREATER_WALLET_PUBLIC_KEY"),
+        "share": os.getenv("CREATER_SHARE")
     }
 ]  
 
@@ -45,7 +48,7 @@ IMAGE_PATH = r"./artwork"
 ARKWORK_OUTPUT_PATH = r"./output"
 CONFIG_PATH = r"./config"
 METADATA_PATH = os.path.join(ARKWORK_OUTPUT_PATH, "./_metadata.json")
-NO_OF_ARTWORK = 10
+NO_OF_ARTWORK = int(os.getenv("NO_OF_ARTWORK"))
 
 SAVE_ARTWORK = True
 SHOW_ARTWORK = False
