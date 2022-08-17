@@ -78,6 +78,8 @@ def generate_nft():
     with open(METADATA_PATH, 'w', encoding='utf-8') as f:
             json.dump(metadata_json, f, ensure_ascii=False, indent=4)
 
+    return metadata_json
+
 
 if __name__ == "__main__":
     generate_nft()
