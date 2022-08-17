@@ -9,6 +9,18 @@ working with virtual environment under the project folder:
 Before artwork generation
 put all your layer into ./artwork/
 
+### 'touch .env'
+edit .env file with the following detail
+```
+CREATER_WALLET_PUBLIC_KEY = 
+CREATER_SHARE = 
+BASE_NAME = 
+DESC = 
+SYMBOL = 
+SELLER_FEE = 
+NO_OF_ARTWORK = 
+```
+
 Generate arkwork and meta data
 
 run: 
