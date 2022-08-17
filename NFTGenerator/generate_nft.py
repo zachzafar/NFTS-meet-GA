@@ -18,14 +18,6 @@ BASE_JSON = {
     "properties": dict()
 }
 
-# change or add if more share parties
-CREATORS_AND_SHARE = [
-    {
-        "address": os.getenv("CREATER_WALLET_PUBLIC_KEY"),
-        "share": os.getenv("CREATER_SHARE")
-    }
-]  
-
 # Change this to match your layer folder, not included special decoration
 LAYERS = ["layer-0",  # Background
           "layer-1",  # Skin
@@ -54,11 +46,28 @@ SAVE_ARTWORK = True
 SHOW_ARTWORK = False
 
 
+def generate_creator_address_list():
+    # change or add if more share parties
+    creators_address_list = os.getenv("CREATER_WALLET_PUBLIC_KEY").split(' ')
+
+    creator_and_share = list()
+
+    for creator_address in creators_address_list:
+        creator_and_share.append(
+            {
+                "address": creator_address,
+                "share": os.getenv("CREATER_SHARE")
+            }
+        )
+    
+    return creator_and_share
+
+
 def generate_nft():
     metadata_json = list()
 
     print("NFT Generator: Generating NFT!")
-    generator = NFTGenerator(images_path = IMAGE_PATH, output_path = ARKWORK_OUTPUT_PATH, config_path = CONFIG_PATH, layers = LAYERS, special_decoration_layer = SPECIAL_DECORATION_LAYER, creators_and_share = CREATORS_AND_SHARE)
+    generator = NFTGenerator(images_path = IMAGE_PATH, output_path = ARKWORK_OUTPUT_PATH, config_path = CONFIG_PATH, layers = LAYERS, special_decoration_layer = SPECIAL_DECORATION_LAYER, creators_and_share = generate_creator_address_list())
     generator.set_isSave(SAVE_ARTWORK)
     generator.set_isShow(SHOW_ARTWORK)
     generator.set_base_metadata(BASE_JSON)
