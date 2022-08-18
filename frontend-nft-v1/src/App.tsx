@@ -61,11 +61,11 @@ const App: React.FC = () => {
               <Navbar />
             <div className='h-full'>                
               <Routes>
-                <Route path='/' element={<Main />} />
-                <Route path='mint' element={<Mint />} />
-                <Route path='holders' element={<Holders />} />
-                <Route path='evolve/:type' element={<Evolve />} />
-                <Route path='familyTree' element={<FamilyTree NFT={modalNft} />} />
+                <Route path='/' element={<Main data-testid='main-component'/>} />
+                <Route path='mint' element={<Mint data-testid='mint-component'/>} />
+                <Route path='holders' element={<Holders data-testid='holders-component'/>} />
+                <Route path='evolve/:type' element={<Evolve data-testid='evolve-component'/>} />
+                <Route path='familyTree' element={<FamilyTree NFT={modalNft} data-testid='modal'/>} />
               </Routes>
             </div>
              {modalStatus && modalNft ? <NFTModal NFT={modalNft}/> : null}

@@ -70,10 +70,10 @@ const Main:React.FC = () => {
   return (
     <div className=' flex flex-col justify-center items-center'>
       <div className='flex flex-col justify-center items-center p-36'>
-        <Typography variant='h2' className='py-7'>
+        <Typography variant='h2' className='py-7' data-testid='project-title'>
           Dudesonchain NFT Collection 
         </Typography>
-        <Typography variant='h6'>
+        <Typography variant='h6' data-testid='project-description'>
           A collection of 10,000 unique dudes (non-fungible tokens) with proof of ownership stored 
           on the Solana blockchain. Each dude is automatically generated and programatically guaranteed 
           to be one of a kind, officially owned by a single person and minted using the Metaplex contract 
@@ -88,7 +88,7 @@ const Main:React.FC = () => {
         </Box>
         :  <div className="grid grid-cols-4 gap-1 place-items-center container mx-auto mt-10">
         {NFTS.map(nft => (
-           <NFTcard key={key++} NFT={nft}/>
+           <NFTcard key={key++} NFT={nft} />
         ))}
         </div>}
         

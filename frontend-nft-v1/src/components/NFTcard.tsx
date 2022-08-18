@@ -20,8 +20,8 @@ const NFTcard : React.FC<Props> = ({NFT}) => {
   const { updateModalStatusAndModalNft } = useAppContext();
 
   return (
-    <div className="py-3">
-    <Card sx={{ maxWidth: 250 ,width: 250}} onClick={() => updateModalStatusAndModalNft(true,NFT)}>
+    <div className="py-3" >
+    <Card sx={{ maxWidth: 250 ,width: 250}} onClick={() => updateModalStatusAndModalNft(true,NFT)} data-testid='nft-card'>
       <CardActionArea>
         <CardMedia
           component="img"

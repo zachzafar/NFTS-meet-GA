@@ -6,7 +6,7 @@ import { Paper, Box, Button } from '@mui/material';
  */
 const Mint:React.FC = () => {
   return (
-    <div className='grid place-items-center'>
+    <div className='grid place-items-center' data-testid='mint-screen'>
       <Box
         sx={{
           '& > :not(style)': {

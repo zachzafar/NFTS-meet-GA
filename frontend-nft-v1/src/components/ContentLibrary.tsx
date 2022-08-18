@@ -9,19 +9,15 @@ import {NFT} from './types/types';
  */
 interface Props {
   setParentNFT: (NFT:NFT,type:string|undefined ) => void;
-  mutate: (NFT:NFT) => void;
-  parentNFT:NFT|undefined;
   type: string|undefined;
 }
 
 /**
  * Display all the dudes owned by the user
  * Takes a function called setParentNFT which updates the state of the Evolve component with an NFT object
- * Takes function called mutate  which changes the DNA attribute of an NFT object
- * Takes an NFT object as a prop called parentNFT  which represents parent NFT Object
  * 
  */
-const ContentLibrary: React.FC<Props> = ({setParentNFT,mutate,parentNFT,type}) => {
+const ContentLibrary: React.FC<Props> = ({setParentNFT,type}) => {
   const [dudes,setDudes] = useState<NFT[]>([])
   const {NFTs} =useAppContext();
   let key = 0;
@@ -35,10 +31,10 @@ const ContentLibrary: React.FC<Props> = ({setParentNFT,mutate,parentNFT,type}) =
   }
   
   return(
-    <div className=' bg-gray-900 h-full overflow-y-scroll fixed flex flex-col'>
+    <div className=' bg-gray-900 h-full overflow-y-scroll fixed flex flex-col' data-testid='evolve-sidebar'>
       {dudes.map(d => (
-        <div key={key++} className='p-5'>
-        <Card  sx={{ width: 150}}  onClick={() => click(d)}>
+        <div key={key++} className='p-5' data-testid='dudes-insidebar'>
+        <Card  sx={{ width: 150}}  onClick={() => click(d)} data-testid='dude-imagebutton'>
           <CardMedia 
           component="img"
           height="240"
