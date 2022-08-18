@@ -14,10 +14,10 @@ const Navbar:React.FC = () => {
     case '/':
       stack = (
         <Stack direction='row' spacing={2}>
-          <Button component={Link} to='/mint' color='inherit'>
+          <Button component={Link} to='/mint' color='inherit' data-testid='mint-button'>
             Mint
           </Button>
-          <Button component={Link} to='/holders' color='inherit'>
+          <Button component={Link} to='/holders' color='inherit' data-testid='holders-button'>
             Holders
           </Button>
         </Stack>
@@ -26,7 +26,7 @@ const Navbar:React.FC = () => {
     case '/mint':
       stack = (
         <Stack direction='row' spacing={2}>
-          <Button component={Link} to='/' color='inherit'>
+          <Button component={Link} to='/' color='inherit' data-testid='home-button'>
             Home
           </Button>
         </Stack>
@@ -36,13 +36,13 @@ const Navbar:React.FC = () => {
       stack = (
         <Stack direction='row' spacing={2}>
           {userStatus  ?
-          <Button component={Link} to='/evolve/crossover' color='inherit'>
+          <Button component={Link} to='/evolve/crossover' color='inherit' data-testid='evolve-button'>
             Evolve
           </Button> : null}
-          <Button component={Link} to='/mint' color='inherit'>
+          <Button component={Link} to='/mint' color='inherit' data-testid='mint-button'>
             Mint
           </Button>
-          <Button component={Link} to='/' color='inherit'>
+          <Button component={Link} to='/' color='inherit' data-testid='home-button'>
             Home
           </Button>
         </Stack>
@@ -51,36 +51,36 @@ const Navbar:React.FC = () => {
     case '/evolve/crossover':
       stack = (
         <Stack direction='row' spacing={2}>
-          <Button component={Link} to='/' color='inherit'>
+          <Button component={Link} to='/' color='inherit' data-testid='home-button'>
             Home
           </Button>
-          <Button component={Link} to='/holders' color='inherit'>
+          <Button component={Link} to='/holders' color='inherit' data-testid='holders-button'>
             Holders
           </Button>
-          <Button component={Link} to='/evolve/mutate' color='inherit'>Mutate</Button>
+          <Button component={Link} to='/evolve/mutate' color='inherit' data-testid='mutate-button'>Mutate</Button>
         </Stack>
       );
       break;
       case '/evolve/mutate':
         stack = (
         <Stack direction='row' spacing={2}>
-          <Button component={Link} to='/' color='inherit'>
+          <Button component={Link} to='/' color='inherit' data-testid='home-button'>
             Home
           </Button>
-          <Button component={Link} to='/holders' color='inherit'>
+          <Button component={Link} to='/holders' color='inherit' data-testid='holders-button'>
             Holders
           </Button>
-          <Button component={Link} to='/evolve/crossover' color='inherit'>Crossover</Button>
+          <Button component={Link} to='/evolve/crossover' color='inherit' data-testid='crossover-button'>Crossover</Button>
         </Stack>
         );  
       break;
       case '/familyTree':
       stack = (
         <Stack direction='row' spacing={2}>
-          <Button component={Link} to='/' color='inherit'>
+          <Button component={Link} to='/' color='inherit' data-testid='home-button'>
             Home
           </Button>
-          <Button component={Link} to='/holders' color='inherit'>
+          <Button component={Link} to='/holders' color='inherit' data-testid='holders-button'>
             Holders
           </Button>
         </Stack>
@@ -92,7 +92,7 @@ const Navbar:React.FC = () => {
   return (
     <AppBar position='static'>
       <Toolbar>
-        <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+        <Typography variant='h6' component='div' sx={{ flexGrow: 1 }} data-testid='navbar-title'>
           dudesonchain
         </Typography>
         {stack}

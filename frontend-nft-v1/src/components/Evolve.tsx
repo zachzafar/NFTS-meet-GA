@@ -9,7 +9,7 @@ import mergeImages from 'merge-images';
 import {bundlrStorage, Metaplex, Nft, useMetaplexFileFromBrowser, walletAdapterIdentity} from '@metaplex-foundation/js'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { createAssociatedTokenAccountInstruction, createTransferInstruction,getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { Keypair, PublicKey, Transaction} from '@solana/web3.js';
+import { PublicKey, Transaction} from '@solana/web3.js';
 
 
 
@@ -147,8 +147,6 @@ const Evolve:React.FC = () => {
   /**
    * Generate new NFT object by changing one feature of parent NFT DNA sequence
    * @param {NFT} parentNFT NFT object used for mutation
-   * @param {string} attributeType 
-   * @param {string} attributeIndex 
    * @returns 
    */
   const mutate = (parentNFT:NFT) => {
@@ -159,7 +157,6 @@ const Evolve:React.FC = () => {
     let childDNA = parentNFT.DNA.replace('[','').replace(']','').split(',')
     let randomIndex = Math.floor(Math.random() * childDNA.length);
     let randomIngredientIndex = Math.floor(Math.random() * (Object.keys(recipe[randomIndex]).length - 1));
-    console.log(randomIndex, randomIngredientIndex)
     childDNA[randomIndex] = String(randomIngredientIndex);
     generateDudeNFT([parentNFT.mint],childDNA,setchild1NFT);
   }
@@ -232,14 +229,14 @@ const Evolve:React.FC = () => {
 */
  const burn = async (NFT:NFT) => {
   if(wallet.publicKey===null || process.env.REACT_APP_CANDY_MACHINE_ID === undefined) {return} 
-  const burnKey = Keypair.generate();
+  const burnKey = new PublicKey(process.env.REACT_APP_CANDY_MACHINE_ID)
   let mintPubKey = new PublicKey(NFT.mint)
   let tx1 = new Transaction();
-  let ata = await getAssociatedTokenAddress(mintPubKey,burnKey.publicKey,false);
+  let ata = await getAssociatedTokenAddress(mintPubKey,burnKey,false);
   let ownerTokenAccount = await getAssociatedTokenAddress(mintPubKey,wallet.publicKey,false);
   connection.requestAirdrop(ownerTokenAccount,1e9)
   tx1.add(
-    createAssociatedTokenAccountInstruction(wallet.publicKey, ata,burnKey.publicKey,mintPubKey),
+    createAssociatedTokenAccountInstruction(wallet.publicKey, ata,burnKey,mintPubKey),
     createTransferInstruction(ownerTokenAccount,ata,wallet.publicKey,1,[],TOKEN_PROGRAM_ID)
   )
   const confirmation = await wallet.sendTransaction(tx1,connection)
@@ -287,7 +284,7 @@ const Evolve:React.FC = () => {
           component="img"
           height="250"
           image={parent1NFT.image}
-          alt="dude">
+          alt="parent">
           </CardMedia> : <Box
         sx={{
           '& > :not(style)': {
@@ -297,7 +294,7 @@ const Evolve:React.FC = () => {
             backgroundColor: 'white' 
           },
         }}
-      >
+      data-testid='emptyparentImage'>
         <Paper variant='outlined' elevation={0} />
       </Box>}
         </Card> 
@@ -307,7 +304,7 @@ const Evolve:React.FC = () => {
           component="img"
           height="250"
           image={child1NFT.image}
-          alt="dude">
+          alt="child">
           </CardMedia> : <Box
         sx={{
           '& > :not(style)': {
@@ -317,7 +314,7 @@ const Evolve:React.FC = () => {
             backgroundColor: 'white' 
           },
         }}
-      >
+      data-testid='emptychildImage'>
         <Paper variant='outlined' elevation={0} />
       </Box>}
         </Card>
@@ -334,7 +331,7 @@ const Evolve:React.FC = () => {
           component="img"
           height="250"
           image={parent1NFT.image}
-          alt="dude">
+          alt="parent1">
           </CardMedia> : <Box
         sx={{
           '& > :not(style)': {
@@ -343,7 +340,7 @@ const Evolve:React.FC = () => {
             backgroundColor: 'white'  
           },
         }}
-      >
+      data-testid='emptyparent1Image'>
         <Paper variant='outlined' elevation={0} />
       </Box>}
         </Card> 
@@ -353,7 +350,7 @@ const Evolve:React.FC = () => {
           component="img"
           height="250"
           image={parent2NFT.image}
-          alt="dude">
+          alt="parent2">
           </CardMedia> : <Box
         sx={{
           '& > :not(style)': {
@@ -362,7 +359,7 @@ const Evolve:React.FC = () => {
             backgroundColor: 'white'  
           },
         }}
-      >
+      data-testid='emptyparent2Image'>
         <Paper variant='outlined' elevation={0} />
       </Box>}
         </Card>
@@ -373,7 +370,7 @@ const Evolve:React.FC = () => {
           component="img"
           height="250"
           image={child1NFT.image}
-          alt="dude">
+          alt="child1">
           </CardMedia> 
           </div>
           : <Box
@@ -385,7 +382,7 @@ const Evolve:React.FC = () => {
 
           },
         }}
-      >
+      data-testid='emptychild1Image'>
         <Paper variant='outlined' elevation={0} />
       </Box>}
         </Card> 
@@ -395,17 +392,16 @@ const Evolve:React.FC = () => {
           component="img"
           height="250"
           image={child2NFT.image}
-          alt="dude">
+          alt="child2">
           </CardMedia> : <Box
         sx={{
           '& > :not(style)': {
             width: 250,
             height: 250,
-
             backgroundColor: 'white' 
           },
         }}
-      >
+      data-testid='emptychild2Image'>
         <Paper variant='outlined' elevation={0} />  
       </Box>}
         </Card>
@@ -414,7 +410,7 @@ const Evolve:React.FC = () => {
       </div>) 
     break;
     default:
-      cards = (<div>Hmm something wrong here</div>)
+      cards = (<div data-testid='error-message'>Hmm something wrong here</div>)
   }
 
 
@@ -427,7 +423,7 @@ const Evolve:React.FC = () => {
 
   return (
   <div className='flex flex-row h-full w-full'>
-    <ContentLibrary mutate={mutate} setParentNFT={setParentNFT} parentNFT={parent1NFT} type={type}/>
+    <ContentLibrary setParentNFT={setParentNFT}  type={type}/>
     <div className='w-full h-full bg-gray-100 grid place-items-center'>
       {cards}
     </div>

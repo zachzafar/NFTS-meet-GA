@@ -32,7 +32,7 @@ const NFTModal:React.FC<Props> = ({NFT}) => {
         height='200'
         width='200'
         image={NFT.image}
-        alt='dude'
+        alt='modal-dude'
         >
         </CardMedia>
       </Card>
@@ -41,7 +41,7 @@ const NFTModal:React.FC<Props> = ({NFT}) => {
       <Typography>Mint Address: {NFT.mint}</Typography>
       <Typography>Parent 1 Address: {parentAddress1}</Typography>
       <Typography>Parent 2 Address:{parentAddress2}</Typography>
-      <Button component={Link} to='/familyTree' variant='contained' onClick={() => updateModalStatusAndModalNft(false,null)}>Explore Tree</Button>
+      <Button component={Link} to='/familyTree' variant='contained' onClick={() => updateModalStatusAndModalNft(false,null)} data-testid='familytree-button'>Explore Tree</Button>
     </div>
     </div>
   )

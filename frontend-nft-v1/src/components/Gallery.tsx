@@ -80,7 +80,7 @@ const Gallery:React.FC = () => {
 
   
   return (
-    <div className="grid grid-cols-4 gap-1  place-items-center container mx-auto mt-10">
+    <div className="grid grid-cols-4 gap-1  place-items-center container mx-auto mt-10" data-testid='gallery-screen'>
         {NFTs.map(nft => (
            <NFTcard key={key++} NFT={nft}/>
         ))}

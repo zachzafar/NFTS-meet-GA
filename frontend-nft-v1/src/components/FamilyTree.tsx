@@ -7,7 +7,8 @@ import { PublicKey } from '@solana/web3.js'
 
 
 interface Props {
-  NFT:NFT|undefined
+  NFT:NFT|undefined,
+  total?:number
 }
 
 /**
@@ -15,10 +16,10 @@ interface Props {
  * Takes an NFT object as a prop which is checked to see if was made from two other NFTs. It is displayed first as the root node of this Tree component
  * The NFT object is returned as well as a recursive call to this Tree component if the original NFT object has parents
  */
-const  FamilyTree:React.FC<Props> = ({NFT}) => {
+const  FamilyTree:React.FC<Props> = ({NFT,total}) => {
   const [parentNFTs, setparentNFTs] = useState<NFT[]>()
   const { connection } = useConnection();
-  let key = 0;
+  let totalTrees = total === undefined ? 1 : total
 
   /**
    * Loads parent Nfts of the NFT prop
@@ -94,12 +95,13 @@ const  FamilyTree:React.FC<Props> = ({NFT}) => {
 },[NFT, connection])
   
   return (
-    <div  className='h-full w-full place-items-center flex flex-col'>
+    <div  className='h-full w-full place-items-center flex flex-col' data-testid='familytree-screen'>
       {NFT !== undefined ? <NFTcard NFT={NFT}/> : null}
       <div className='flex flex-row'>
-      {parentNFTs !== undefined ? parentNFTs.map(nft => (
-        <FamilyTree key={key++} NFT={nft}/>
-      )): null}
+      {parentNFTs !== undefined && totalTrees < 4 ? parentNFTs.map(nft => {
+        totalTrees++
+        return(<FamilyTree key={totalTrees} NFT={nft} total={totalTrees}/>)
+      }): null}
       </div>
     </div>
   )
