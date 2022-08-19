@@ -1,3 +1,9 @@
+In the .env file you need to place a candy machine ID and and mint address
+Because we use devnet this candyMachine will expire at some point but use the following credentials if that is not the case
+
+REACT_APP_CANDY_MACHINE_ID=4ne36LCzXmuR8LVcZ43NyLdX9XbwrHpoe5m2j5pqvDQR
+REACT_APP_CANDY_MACHINE_MINT_ADDRESS=EPEBACUmsuwvbR9NqvP3nYJ4U7uGaT4x1w29sPU2bjuW
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -19,6 +25,8 @@ You will also see any lint errors in the console.
 
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+Test for for the components have the .test.tsx extension throughout the src folder
 
 ### `npm run build`
 
