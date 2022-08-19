@@ -37,7 +37,7 @@ const TestingComponent = () =>{
 }
 
 
-test('Modal screen renders when NFTCard is clicked', async () => {
+test('FamilyTree component renders correctly when NFTCard component is clicked', async () => {
   render(<AppProvider>
     <TestingComponent/>
     </AppProvider>)
